@@ -5,8 +5,8 @@
   tasks:
     - name: Creating the Container
       docker_container:
-         name: team20-itshop-container #docker container name
-         image: team20-itshop:latest #docker image name
+         name: itshop-container #docker container name
+         image: itshop:latest #docker image name
          ports:
            - "80:3000" #เลข port ตัวแรกคือเลข  port ที่รับมาจาก browser ตัวหลังคือ  port ของ docker (คงไว้ที่ 80 ถ้าเป็น nextjs project ก็ 3000)
          state: started

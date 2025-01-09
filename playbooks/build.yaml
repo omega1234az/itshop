@@ -5,9 +5,9 @@
   tasks:
     - name: Building Docker Image
       docker_image:
-         name: team20-itshop:latest #docker image name
+         name: itshop:latest #docker image name
          source: build
          build:
-            path: ~/team20-itshop #path ที่เก็บไฟล์ sourcecode 
+            path: ~/itshop #path ที่เก็บไฟล์ sourcecode 
          state: present
          force_source: true
