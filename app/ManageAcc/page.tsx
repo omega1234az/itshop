@@ -1,3 +1,5 @@
+import Footer from "../components/Footer";
+
 export default function ManageAcc() {
     return (
       <div className="flex flex-col min-h-screen">
@@ -57,17 +59,7 @@ export default function ManageAcc() {
             </div>
           </div>
         </div>
-        <footer className="bg-gray-100 p-3 text-center border-t border-gray-300">
-          <div className="flex justify-center gap-4 mb-2">
-            <img src="logo.png" alt="logo" className="h-5" />
-            <img src="mastercard.png" alt="MasterCard" className="h-5" />
-            <img src="kplus.png" alt="K+" className="h-5" />
-          </div>
-          <div>
-            <a href="#" className="mr-3 text-blue-500 hover:underline">Facebook</a>
-            <a href="#" className="text-blue-500 hover:underline">Instagram</a>
-          </div>
-        </footer>
+        <Footer />
       </div>
     );
   }
