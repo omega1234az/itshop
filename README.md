@@ -1,36 +1,82 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+ITShop
 
-## Getting Started
+📌 รายละเอียดโครงการ
 
-First, run the development server:
+ITShop เป็นระบบร้านค้าออนไลน์สำหรับจำหน่ายสินค้าไอที โดยมีฟีเจอร์หลักดังนี้:
 
-```bash
+🛍 ระบบจัดการสินค้า
+
+🛒 ระบบสั่งซื้อสินค้า
+
+👤 ระบบสมาชิก
+
+💳 ระบบชำระเงิน
+
+🚚 ระบบติดตามคำสั่งซื้อ
+
+🛠 เทคโนโลยีที่ใช้
+
+Frontend: Next.js , Tailwind CSS
+
+Backend: Node.js, Express.js, MySQL
+
+Authentication: JWT
+
+Styling: Tailwind CSS, SweetAlert2
+
+📂 โครงสร้างโฟลเดอร์
+
+ITShop/
+├── backend/              # โค้ดฝั่งเซิร์ฟเวอร์
+│   ├── controllers/      # จัดการ API
+│   ├── middleware/       # จัดการ Middleware
+│   ├── routers/         # เส้นทาง API
+│   ├── db/              # การเชื่อมต่อฐานข้อมูล
+│   ├── app.js           # ไฟล์เริ่มต้นเซิร์ฟเวอร์
+├── frontend/             # โค้ดฝั่งลูกค้า
+│   ├── components/      # ส่วนประกอบ UI
+│   ├── pages/           # หน้าต่าง ๆ ของเว็บ
+│   ├── store/           # Vuex/Pinia store
+│   ├── assets/          # ไฟล์รูปภาพ ไอคอน ฯลฯ
+│   ├── nuxt.config.js   # การตั้งค่า Nuxt.js
+├── README.md             # คำอธิบายโครงการ
+├── package.json          # รายการ dependencies
+
+🚀 วิธีการติดตั้งและใช้งาน
+
+1️⃣ Clone โปรเจค
+
+git clone https://github.com/your-repo/ITShop.git
+cd ITShop
+
+2️⃣ ติดตั้ง dependencies
+
+cd backend
+npm install
+cd ../frontend
+npm install
+
+3️⃣ ตั้งค่าฐานข้อมูล
+
+สร้างฐานข้อมูล MySQL และตั้งค่าการเชื่อมต่อใน backend/db/connection.js
+
+4️⃣ รันโปรเจค
+
+▶️ ฝั่ง Backend
+
+cd backend
+npm start
+
+▶️ ฝั่ง Frontend
+
+cd frontend
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+👨‍💻 ผู้จัดทำ
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+66026167
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+66022882
 
-## Learn More
+66022826
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
