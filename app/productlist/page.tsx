@@ -1,7 +1,7 @@
-import React from "react";
-import "./App.css";
 
-const App: React.FC = () => {
+import "./productlist.css";
+
+export default function Productlist() {
   return (
     <div className="App">
       {/* Header */}
@@ -60,4 +60,4 @@ const App: React.FC = () => {
   );
 };
 
-export default App;
+
