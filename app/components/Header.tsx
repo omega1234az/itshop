@@ -1,3 +1,4 @@
+import Link from 'next/link'
 export default function Header() {
     return <>
         <div className="mx-auto container grid grid-cols-10 text-center items-center gap-5">
@@ -8,7 +9,8 @@ export default function Header() {
                 <img src="/icon/search.png" alt="searth" className="cursor-pointer" />
                 <img src="/icon/bell.png" alt="searth" className="cursor-pointer mx-auto" />
             
-            <button className="bg-[#0294BD] p-2 rounded-lg">Login</button>
+                <Link className="bg-[#0294BD] p-2 rounded-lg" href="/login">Login</Link>
+            
         </div>
     </>
 }
