@@ -28,12 +28,12 @@ export default function login() {
               type="submit"
               className="w-60 p-2 bg-[#0294BDD9] text-black rounded-lg hover:bg-blue-500 ml-48 text-3xl font-bold"
             >
-              Login
+              <a href="/">Login</a>
             </button>
           </form>
           <div className="flex justify-between mt-4 text-sm">
-            <a href="#" className="text-blue-500 hover:underline">Forgot Password?</a>
-            <a href="#" className="text-blue-500 hover:underline">Create Account?</a>
+            <a href="/Forgot" className="text-blue-500 hover:underline">Forgot Password?</a>
+            <a href="/CreateAcc" className="text-blue-500 hover:underline">Create Account?</a>
           </div>
         </div>
       </div>

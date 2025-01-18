@@ -38,7 +38,7 @@ export default function CreateAcc() {
               type="submit"
               className="w-[250px] p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-3xl font-bold ml-44"
             >
-              Confirm
+              <a href="/login">Confirm</a>
             </button>
           </form>
         </div>
