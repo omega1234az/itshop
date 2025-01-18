@@ -13,6 +13,9 @@ RUN npm install
 # คัดลอกไฟล์ทั้งหมดในโปรเจคไปยัง container
 COPY . .
 
+RUN npm install express
+RUN npm install mariadb
+RUN npm install dotenv
 # Build โปรเจค Next.js สำหรับ production
 RUN npm run build
 

@@ -47,7 +47,7 @@ export default function Home() {
           </button>
           <button className="bg-[#0294BD5C] w-full justify-items-center rounded-lg  ">
             <img src="/icon/ssd.png" alt="" className="h-16 w-16 object-cover mx-auto" />
-            <p className="mt-2 text-center">...</p>
+            <p className="mt-2 text-center">Notebook</p>
           </button>
         </div>
         <div className="grid grid-cols-7 gap-4 mt-5">
