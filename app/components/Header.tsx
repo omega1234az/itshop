@@ -8,7 +8,7 @@ export default function Header() {
             
                 
                 <Link href="/productlist"><img src="/icon/search.png" alt="searth" className="cursor-pointer" /></Link>
-                <img src="/icon/bell.png" alt="searth" className="cursor-pointer mx-auto" />
+                <Link href="/cart" className='ml-auto pr-10'><img src="/icon/cart.png" alt="cart" className="cursor-pointer w-7" /></Link>
             
                 <Link className="bg-[#0294BD] p-2 rounded-lg" href="/login">Login</Link>
             
