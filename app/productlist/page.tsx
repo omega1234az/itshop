@@ -26,12 +26,11 @@ export default function Productlist() {
 
       {/* Product List */}
       <div className="w-full grid grid-cols-5 gap-5">
-      <Item/>
-              <Item/>
-              <Item/>
-              <Item/>
-              <Item/>
-              <Item/>
+                <Item name="Amd" price={20} />
+                <Item name="Amd" price={20} />
+                <Item name="Amd" price={20} />
+                <Item name="Amd" price={20} />
+                <Item name="Amd" price={20} />
             
       </div>
     </div>

@@ -6,7 +6,8 @@ export default function Header() {
             <Link href="/contact" className="font-bold">ติดต่อ</Link>
             <input className="border border-black col-span-5 p-2 rounded-lg" placeholder="ค้นหา"></input>
             
-                <img src="/icon/search.png" alt="searth" className="cursor-pointer" />
+                
+                <Link href="/productlist"><img src="/icon/search.png" alt="searth" className="cursor-pointer" /></Link>
                 <img src="/icon/bell.png" alt="searth" className="cursor-pointer mx-auto" />
             
                 <Link className="bg-[#0294BD] p-2 rounded-lg" href="/login">Login</Link>
