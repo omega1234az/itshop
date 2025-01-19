@@ -1,24 +1,9 @@
 import Image from "next/image";
+import Footer from "../components/Footer";
 
 export default function ProductDetail() {
   return (
     <div className="bg-gray-100 min-h-screen">
-      {/* Header */}
-      <header className="flex justify-between items-center bg-white shadow p-4">
-        <div className="flex items-center">
-          <div className="text-lg font-bold">logo</div>
-        </div>
-        <div className="flex items-center space-x-4">
-          <input
-            type="text"
-            placeholder="ค้นหา"
-            className="border px-4 py-2 rounded-lg"
-          />
-          <button className="bg-blue-500 text-white px-4 py-2 rounded-lg">
-            Login
-          </button>
-        </div>
-      </header>
 
       {/* Main Content */}
       <div className="container mx-auto p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -56,24 +41,10 @@ export default function ProductDetail() {
             </svg>
           </button>
         </div>
+        <div>รายระเอียด</div>
       </div>
 
-      {/* Footer */}
-      <footer className="bg-gray-200 p-4 flex justify-between items-center">
-        <div>logo</div>
-        <div className="flex space-x-4">
-          <div>จ่ายด้วย</div>
-          <div className="text-lg font-bold">MasterCard</div>
-        </div>
-        <div className="flex space-x-4">
-          <a href="#" className="text-blue-500">
-            Facebook
-          </a>
-          <a href="#" className="text-blue-500">
-            Instagram
-          </a>
-        </div>
-      </footer>
+     <Footer/>
     </div>
   );
 }

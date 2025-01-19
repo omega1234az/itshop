@@ -1,18 +1,11 @@
 
 import "./productlist.css";
-
+import Item from "../components/item";
 export default function Productlist() {
   return (
-    <div className="App">
+    <div className="App container mx-auto">
       {/* Header */}
-      <header className="header">
-        <div className="logo">Logo</div>
-        <div className="search-bar">
-          <input type="text" placeholder="ค้นหา..." />
-          <button>🔍</button>
-        </div>
-        <button className="login-button">Login</button>
-      </header>
+      
 
       {/* Filters */}
       <section className="filters">
@@ -32,30 +25,15 @@ export default function Productlist() {
       </section>
 
       {/* Product List */}
-      <section className="product-list">
-        <div className="product">
-          <img src="https://via.placeholder.com/150" alt="Product 1" />
-          <h3>Intel Core i5</h3>
-          <p>฿8,000</p>
-        </div>
-        <div className="product">
-          <img src="https://via.placeholder.com/150" alt="Product 2" />
-          <h3>Intel Core i9</h3>
-          <p>฿16,000</p>
-        </div>
-        <div className="product">
-          <img src="https://via.placeholder.com/150" alt="Product 3" />
-          <h3>Kingston Fury</h3>
-          <p>฿3,500</p>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="footer">
-        <div className="footer-logo">Logo</div>
-        <div>ติดต่อสอบถาม</div>
-        <div>Facebook | Instagram</div>
-      </footer>
+      <div className="w-full grid grid-cols-5 gap-5">
+      <Item/>
+              <Item/>
+              <Item/>
+              <Item/>
+              <Item/>
+              <Item/>
+            
+      </div>
     </div>
   );
 };
