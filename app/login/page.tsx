@@ -1,7 +1,10 @@
-'use client';
+"use client";
 
-import React, { useState, FormEvent } from 'react';
-import Cookies from 'js-cookie';  // ใช้ js-cookie
+import React, { useState, FormEvent, useEffect } from 'react';
+import Cookies from 'js-cookie';
+import Link from 'next/link';
+import { redirect } from 'next/navigation';
+import { getCookies, setCookie, deleteCookie, getCookie } from 'cookies-next/client';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState<string>('');
@@ -9,13 +12,43 @@ const Login: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
 
+  const SESSION_EXPIRY_TIME = 7 * 24 * 60 * 60 * 1000; // 7 วันในมิลลิวินาที
+
+  // ตรวจสอบ session เมื่อโหลดคอมโพเนนต์
+  useEffect(() => {
+    checkSession();
+  }, []);
+
+  // แยกฟังก์ชันตรวจสอบ session ออกมา
+  const checkSession = async () => {
+    try {
+      const res = await fetch('/api/auth/check-session', {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include"
+      });
+      const data = await res.json();
+
+      if (data.isLoggedIn) {
+        console.log('✅ Session Active:', data.session_id);
+        window.location.href = '/'; // ถ้ามี session ให้ redirect ไปหน้าหลัก
+      } else {
+        console.log('🚫 No Active Session');
+        // ถ้าไม่มี session ให้ redirect ไปหน้า login
+      }
+    } catch (error) {
+      console.error('Error checking session:', error);
+    }
+  };
+
   const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setErrorMessage(''); // รีเซ็ตข้อความข้อผิดพลาด
+    setErrorMessage('');
 
     try {
-      // ทำ POST request ไปยัง API
       const response = await fetch('/api/auth/signin', {
         method: 'POST',
         headers: {
@@ -27,16 +60,19 @@ const Login: React.FC = () => {
       const data = await response.json();
 
       if (response.ok) {
-        // ถ้าการเข้าสู่ระบบสำเร็จ, เก็บ session ID หรือ token ใน cookies
-        Cookies.set('session_id', data.session_id, { 
-          expires: 7, // หมดอายุภายใน 7 วัน
-          path: '/' // ใช้สำหรับทุกเส้นทางในเว็บไซต์
+        Cookies.set('session_id', data.session_id, {
+          expires: 7,
+          path: '/'
+        });
+        Cookies.set('session_timestamp', Date.now().toString(), {
+          expires: 7,
+          path: '/'
         });
 
-        // รีไดเรกต์ไปยังหน้าหลัก หรือหน้าอื่นๆ
+        // ใช้ window.location.href สำหรับการ redirect หลังจาก login สำเร็จ
         window.location.href = '/';
       } else {
-        setErrorMessage(data.message); // แสดงข้อความข้อผิดพลาด
+        setErrorMessage(data.message);
       }
     } catch (error) {
       setErrorMessage('เกิดข้อผิดพลาดในการเข้าสู่ระบบ');
@@ -49,10 +85,10 @@ const Login: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <div className="flex-1 flex justify-center items-center">
-        <div className="w-[656px] h-auto p-5 border border-gray-300 rounded shadow-md">
-          <h2 className="text-center mb-5 text-5xl font-bold">Login To your Account</h2>
+        <div className="w-150 h-auto p-5 border border-gray-300 rounded shadow-md">
+          <h2 className="text-center mb-5 text-3xl font-bold">Login To your Account</h2>
           <form onSubmit={handleLogin}>
-            <div className="mb-12 text-3xl">
+            <div className="mb-12 text-xl">
               <label htmlFor="email" className="block mb-1">Email</label>
               <input
                 type="email"
@@ -63,7 +99,7 @@ const Login: React.FC = () => {
                 className="w-full p-2 border border-gray-300 rounded-lg h-[53px]"
               />
             </div>
-            <div className="mb-12 text-3xl">
+            <div className="mb-12 text-xl">
               <label htmlFor="password" className="block mb-1">Password</label>
               <input
                 type="password"
@@ -76,7 +112,7 @@ const Login: React.FC = () => {
             </div>
             <button
               type="submit"
-              className="w-60 p-2 bg-[#0294BDD9] text-black rounded-lg hover:bg-blue-500 ml-48 text-3xl font-bold"
+              className="w-60 p-2 bg-[#0294BDD9] text-black rounded-lg hover:bg-blue-500 ml-48 text-xl font-bold"
               disabled={loading}
             >
               {loading ? 'กำลังเข้าสู่ระบบ...' : 'Login'}
@@ -86,8 +122,8 @@ const Login: React.FC = () => {
             )}
           </form>
           <div className="flex justify-between mt-4 text-sm">
-            <a href="/Forgot" className="text-blue-500 hover:underline">Forgot Password?</a>
-            <a href="/CreateAcc" className="text-blue-500 hover:underline">Create Account?</a>
+            <Link href="/Forgot" className="text-blue-500 hover:underline">Forgot Password?</Link>
+            <Link href="/CreateAcc" className="text-blue-500 hover:underline">Create Account?</Link>
           </div>
         </div>
       </div>

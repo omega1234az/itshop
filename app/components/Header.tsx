@@ -2,6 +2,18 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import {
+    getCookie,
+    getCookies,
+    setCookie,
+    deleteCookie,
+    hasCookie,
+    useGetCookies,
+    useSetCookie,
+    useHasCookie,
+    useDeleteCookie,
+    useGetCookie,
+  } from 'cookies-next/client';
 
 // กำหนด interface สำหรับข้อมูลผู้ใช้
 interface User {
@@ -12,6 +24,7 @@ interface User {
 }
 
 export default function Header() {
+    const deleteCookie = useDeleteCookie();
     const [user, setUser] = useState<User | null>(null);
     const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
 
@@ -40,14 +53,11 @@ export default function Header() {
     }, []);
 
     // ฟังก์ชัน logout: ลบคุกกี้ session_id
-    const handleLogout = () => {
-        // ลบคุกกี้ session_id
-        document.cookie = "session_id=; Max-Age=0; path=/; HttpOnly; SameSite=Strict";
-
-        // รีเซ็ตข้อมูลผู้ใช้ใน state
-        setUser(null);
-        setDropdownOpen(false); // ปิด dropdown หลัง logout
-    };
+    const handleLogout = async () => {
+        await fetch("/api/auth/logout", { method: "POST" });
+        window.location.reload(); // รีเฟรชหลังลบ Cookie
+      };
+      
 
     return (
         <div className="mx-auto container grid grid-cols-10 text-center items-center gap-5">

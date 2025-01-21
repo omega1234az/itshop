@@ -17,6 +17,7 @@ RUN npm install express
 RUN npm install mariadb
 RUN npm install dotenv
 # Build โปรเจค Next.js สำหรับ production
+RUN npx prisma generate
 RUN npm run build
 
 # เปิดพอร์ตที่ Next.js จะรัน (โดยปกติคือ 3000)
