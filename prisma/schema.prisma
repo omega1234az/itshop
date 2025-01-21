@@ -17,6 +17,7 @@ model users {
   role        String   @default("customer")
   created_at  DateTime @default(now()) @db.Timestamp()
   total_spent Float    @default(0)
+  img         String   @default("default.jpg")
   orders      orders[]
   payments    payments[]
   cart        cart[]
