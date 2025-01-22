@@ -8,13 +8,17 @@ WORKDIR /app
 COPY package*.json ./
 
 # ติดตั้ง dependencies
+
+RUN npm install react@18 react-dom@18
 RUN npm install
+
 
 # คัดลอกไฟล์ทั้งหมดในโปรเจคไปยัง container
 COPY . .
 
-RUN npm install express
-RUN npm install mariadb
+
+
+
 RUN npm install dotenv
 # Build โปรเจค Next.js สำหรับ production
 RUN npx prisma generate

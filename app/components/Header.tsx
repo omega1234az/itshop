@@ -39,16 +39,21 @@ export default function Header() {
                     },
                     credentials: "include", // ส่ง Cookie ไปด้วย
                 });
-
+    
+                if (res.status === 401 || res.status === 403) {
+                    console.log("User not authenticated"); // ไม่ใช่ข้อผิดพลาดจริง
+                    return; // ออกจากฟังก์ชันโดยไม่โยน error
+                }
+    
                 if (!res.ok) throw new Error("Failed to fetch");
-
+    
                 const data = await res.json();
                 setUser(data);
             } catch (error) {
                 console.error("Error fetching user:", error);
             }
         }
-
+    
         fetchUser();
     }, []);
 

@@ -24,17 +24,24 @@ export async function POST(request) {
       data: {
         email,
         password: hashedPassword,
-        name,
-      },
+        name
+      }
+    })
+    
+    // อัปเดตรูปภาพหลังจากที่ user ถูกสร้างแล้ว
+    const updatedUser = await prisma.users.update({
+      where: { user_id: user.user_id },
+      data: { img: user.user_id + ".jpg" }
     })
 
-    return Response.json({ 
+    return await Response.json({ 
       message: 'ผู้ใช้ถูกสร้างเรียบร้อยแล้ว', 
       user: {
         user_id: user.user_id,
         name: user.name,
         email: user.email,
         role: user.role,
+        img: user.img,
         created_at: user.created_at
       }
     }, { status: 201 })
