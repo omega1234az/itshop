@@ -1,0 +1,108 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
+}
+model users {
+  user_id     Int      @id @default(autoincrement())
+  name        String
+  email       String   @unique
+  password    String
+  phone       String?
+  address     String?
+  role        String   @default("customer")
+  created_at  DateTime @default(now()) @db.Timestamp()
+  total_spent Float    @default(0)
+  img         String   @default("default.jpg")
+  orders      orders[]
+  payments    payments[]
+  cart        cart[]
+}
+
+model categories {
+  category_id Int      @id @default(autoincrement())
+  name        String
+  description String?
+  created_at  DateTime @default(now()) @db.Timestamp()
+  view_count  Int      @default(0)
+  sub_categories sub_categories[]
+  products    products[]
+}
+
+model sub_categories {
+  sub_category_id Int      @id @default(autoincrement())
+  name            String
+  description     String?
+  category_id     Int
+  created_at      DateTime @default(now()) @db.Timestamp()
+  category        categories @relation(fields: [category_id], references: [category_id], onDelete: Cascade)
+  products        products[]
+}
+
+model products {
+  product_id    Int       @id @default(autoincrement())
+  name          String
+  description   String?
+  price         Float
+  stock         Int       @default(0)
+  category_id   Int?
+  sub_category_id Int?
+  img           String?
+  created_at    DateTime  @default(now()) @db.Timestamp()
+  view_count    Int       @default(0)
+  total_sales   Int       @default(0)
+  total_revenue Float     @default(0)
+  category      categories? @relation(fields: [category_id], references: [category_id], onDelete: SetNull)
+  sub_category  sub_categories? @relation(fields: [sub_category_id], references: [sub_category_id], onDelete: SetNull)
+  order_details order_details[]
+  cart          cart[]
+}
+
+model orders {
+  order_id       Int       @id @default(autoincrement())
+  user_id        Int
+  total_price    Float
+  status         String    @default("pending")
+  payment_status String    @default("pending")
+  order_date     DateTime  @default(now()) @db.Timestamp()
+  total_order_price Float @default(0)
+  user           users     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  order_details  order_details[]
+  payments       payments[]
+}
+
+model order_details {
+  order_detail_id Int       @id @default(autoincrement())
+  order_id        Int
+  product_id      Int
+  quantity        Int
+  price           Float
+  order           orders     @relation(fields: [order_id], references: [order_id], onDelete: Cascade)
+  product         products   @relation(fields: [product_id], references: [product_id], onDelete: Cascade)
+}
+
+model payments {
+  payment_id   Int       @id @default(autoincrement())
+  order_id     Int
+  user_id      Int
+  payment_method String
+  payment_status String @default("pending")
+  transaction_id String @unique
+  amount       Float
+  payment_date DateTime @default(now()) @db.Timestamp()
+  order        orders    @relation(fields: [order_id], references: [order_id], onDelete: Cascade)
+  user         users     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+}
+
+model cart {
+  cart_id     Int       @id @default(autoincrement())
+  user_id     Int
+  product_id  Int
+  quantity    Int
+  user        users     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  product     products  @relation(fields: [product_id], references: [product_id], onDelete: Cascade)
+}
