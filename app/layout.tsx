@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import Header from './components/Header'
-import Footer from './components/Footer'
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -30,13 +29,10 @@ export default function RootLayout({
     <html lang="en">
       
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Header></Header>
-          <main className="flex-grow"> {/* ทำให้ main content ขยายเต็มที่ */}
-          {children} {/* แสดงเนื้อหาของหน้าต่างๆ */}  
-          </main>
-        <Footer />
+        {children}
       </body>
     </html>
   );

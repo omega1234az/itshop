@@ -1,5 +1,5 @@
 # ใช้ Node.js เป็น base image
-FROM node:18-alpine
+FROM node:22.12.0
 
 # ตั้ง working directory ใน container
 WORKDIR /app
@@ -8,15 +8,20 @@ WORKDIR /app
 COPY package*.json ./
 
 # ติดตั้ง dependencies
+
+RUN npm install react@18 react-dom@18
 RUN npm install
+
 
 # คัดลอกไฟล์ทั้งหมดในโปรเจคไปยัง container
 COPY . .
 
-RUN npm install express
-RUN npm install mariadb
+
+
+
 RUN npm install dotenv
 # Build โปรเจค Next.js สำหรับ production
+RUN npx prisma generate
 RUN npm run build
 
 # เปิดพอร์ตที่ Next.js จะรัน (โดยปกติคือ 3000)
