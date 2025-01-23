@@ -1,3 +1,5 @@
+import Link from 'next/link'
+
 export default function Footer() {
   return (
     <footer className="bg-[#0000004D] p-3 h-[150px] border border-gray-300 flex flex-row justify-between">

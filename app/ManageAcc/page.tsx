@@ -1,9 +1,24 @@
-import Footer from "../components/Footer";
-
 export default function ManageAcc() {
     return (
-      <div className="flex flex-col min-h-screen">
-        <div className="flex-1 flex flex-col items-center">
+      <div className="flex flex-col">
+        <div className="flex-1 flex flex-row p-10">
+          <div className="container border-solid border-gray-700 border-r-4  flex flex-col items-start h-auto w-[500px]">
+            <h1 className="text-2xl font-bold mb-5">Quick</h1>
+            <ul className="list-disc pl-6 space-y-2">
+                <li className="text-xl text-gray-700">
+                        <a href="" className="hover:text-blue-500">Item 1</a>
+                      </li>
+                      <li className="text-xl text-gray-700">
+                        <a href="" className="hover:text-blue-500">Item 2</a>
+                      </li>
+                      <li className="text-xl text-gray-700">
+                        <a href="" className="hover:text-blue-500">Item 3</a>
+                      </li>
+                      <li className="text-xl text-gray-700">
+                        <a href="" className="hover:text-blue-500">Item 4</a>
+                    </li>
+              </ul>
+          </div>
           <div className="w-full max-w-4xl p-5">
             <h2 className="text-2xl font-bold mb-5">Account Management</h2>
             <div className="grid grid-cols-2 gap-4 mb-8">
@@ -53,13 +68,12 @@ export default function ManageAcc() {
                     <p className="text-sm">Product Name: Example Product</p>
                     <p className="text-sm">Date: 2025-01-16</p>
                   </div>
-                  <button className="p-2 bg-blue-500 text-white rounded hover:bg-blue-600">View</button>
+                  <button className="p-2 bg-blue-500 text-white rounded hover:bg-blue-600 border-solid border-2 border-[#0294BD5C]">View</button>
                 </div>
               ))}
             </div>
           </div>
         </div>
-        <Footer />
       </div>
     );
   }
