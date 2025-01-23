@@ -1,8 +1,7 @@
--- สร้างฐานข้อมูล
 CREATE DATABASE IF NOT EXISTS itshop;
 USE itshop;
 
--- 🔹 ตารางผู้ใช้ (Users) พร้อมกับฟิลด์ total_spent
+-- 🔹 ตารางผู้ใช้ (Users)
 CREATE TABLE users (
     user_id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL,
@@ -11,17 +10,15 @@ CREATE TABLE users (
     phone VARCHAR(15),
     address TEXT,
     role ENUM('customer', 'admin') DEFAULT 'customer',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    total_spent DECIMAL(10,2) DEFAULT 0  -- ยอดรวมที่ผู้ใช้ใช้จ่าย
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- 🔹 ตารางหมวดหมู่สินค้า (Categories) พร้อมกับฟิลด์ view_count
+-- 🔹 ตารางหมวดหมู่สินค้า (Categories)
 CREATE TABLE categories (
     category_id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL,
     description TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    view_count INT DEFAULT 0  -- จำนวนการดูหมวดหมู่
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- 🔹 ตารางหมวดหมู่ย่อยสินค้า (Sub Categories)
@@ -34,7 +31,7 @@ CREATE TABLE sub_categories (
     FOREIGN KEY (category_id) REFERENCES categories(category_id) ON DELETE CASCADE
 );
 
--- 🔹 ตารางสินค้า (Products) พร้อมกับฟิลด์ view_count, total_sales, total_revenue
+-- 🔹 ตารางสินค้า (Products)
 CREATE TABLE products (
     product_id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(150) NOT NULL,
@@ -45,14 +42,11 @@ CREATE TABLE products (
     sub_category_id INT,
     img VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    view_count INT DEFAULT 0,  -- จำนวนการดูสินค้า
-    total_sales INT DEFAULT 0,  -- จำนวนสินค้าที่ขายได้
-    total_revenue DECIMAL(10,2) DEFAULT 0,  -- ยอดขายรวม
     FOREIGN KEY (category_id) REFERENCES categories(category_id) ON DELETE SET NULL,
     FOREIGN KEY (sub_category_id) REFERENCES sub_categories(sub_category_id) ON DELETE SET NULL
 );
 
--- 🔹 ตารางคำสั่งซื้อ (Orders) พร้อมกับฟิลด์ total_order_price
+-- 🔹 ตารางคำสั่งซื้อ (Orders)
 CREATE TABLE orders (
     order_id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT,
@@ -60,7 +54,6 @@ CREATE TABLE orders (
     status ENUM('pending', 'paid', 'shipped', 'delivered', 'canceled') DEFAULT 'pending',
     payment_status ENUM('pending', 'paid', 'failed', 'refunded') DEFAULT 'pending',
     order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    total_order_price DECIMAL(10,2) DEFAULT 0,  -- ยอดรวมคำสั่งซื้อ
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
