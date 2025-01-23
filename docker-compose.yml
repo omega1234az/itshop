@@ -18,6 +18,7 @@ services:
       MARIADB_ROOT_PASSWORD: ${DB_PASS}
     volumes:
       # Preload files for MySQL data
+      - ./mysql:/docker-entrypoint-initdb.d:z
       # We have to save MySQL volume that will be used in upgrade
       - dbdata:/var/lib/mysql
     ports:
