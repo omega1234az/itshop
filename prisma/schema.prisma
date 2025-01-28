@@ -44,23 +44,25 @@ model sub_categories {
 }
 
 model products {
-  product_id    Int       @id @default(autoincrement())
-  name          String
-  description   String?
-  price         Float
-  stock         Int       @default(0)
-  category_id   Int?
+  product_id     Int        @id @default(autoincrement())
+  name           String
+  description    String?
+  price          Float
+  stock          Int        @default(0)
+  category_id    Int?
   sub_category_id Int?
-  img           String?
-  created_at    DateTime  @default(now()) @db.Timestamp()
-  view_count    Int       @default(0)
-  total_sales   Int       @default(0)
-  total_revenue Float     @default(0)
-  category      categories? @relation(fields: [category_id], references: [category_id], onDelete: SetNull)
-  sub_category  sub_categories? @relation(fields: [sub_category_id], references: [sub_category_id], onDelete: SetNull)
-  order_details order_details[]
-  cart          cart[]
+  img            String?
+  created_at     DateTime   @default(now()) @db.Timestamp()
+  view_count     Int        @default(0)
+  total_sales    Int        @default(0)
+  total_revenue  Float      @default(0)
+  status         Int        @default(1) // 1 = active, 0 = inactive, -1 = deleted
+  category       categories? @relation(fields: [category_id], references: [category_id], onDelete: SetNull)
+  sub_category   sub_categories? @relation(fields: [sub_category_id], references: [sub_category_id], onDelete: SetNull)
+  order_details  order_details[]
+  cart           cart[]
 }
+
 
 model orders {
   order_id       Int       @id @default(autoincrement())

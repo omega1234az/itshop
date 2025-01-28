@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { jwtVerify } from 'jose';
 
 export async function middleware(request) {
+  
   let token = request.headers.get('Authorization');
   const sessionCookie = request.cookies.get('session_id'); // ✅ ดึง token จาก Cookie
 
@@ -9,6 +10,7 @@ export async function middleware(request) {
     if (!token && sessionCookie) {
       token = sessionCookie.value; // ✅ ใช้ token จาก Cookie ถ้าไม่มีใน Header
     }
+    
 
     if (!token) {
       return NextResponse.json({ message: 'กรุณาเข้าสู่ระบบ' }, { status: 401 });
@@ -27,34 +29,30 @@ export async function middleware(request) {
 
     console.log('✅ ตรวจสอบ Token สำเร็จ:', payload);
 
-    // ✅ อ่าน Body เดิมจาก Request
-    let body = {};
-    if (request.body) {
-      try {
-        body = await request.json(); // อ่าน Body เดิม
-      } catch (error) {
-        console.warn("⚠️ ไม่สามารถอ่าน JSON Body ได้ อาจเป็น Request ที่ไม่มี Body");
-      }
+    // 🔹 ตรวจสอบว่า path ที่เข้าไปเป็น API ของ admin หรือไม่
+    if (request.url.includes('/api/admin') && payload.role !== 'admin') {
+      return NextResponse.json({ message: 'คุณไม่มีสิทธิ์เข้าถึง API ของ admin' }, { status: 403 });
     }
+    if (request.nextUrl.pathname.startsWith('/admin/dashboard') && payload.role !== 'admin') {
+      return NextResponse.redirect(new URL('/', request.url));
+   }
 
-    // ✅ แนบข้อมูลผู้ใช้ลงใน Body
-    const newBody = JSON.stringify({
-      ...body, // ข้อมูลเดิม
-      user_id: payload.user_id,
-      email: payload.email,
-      role: payload.role,
-      img: payload.img || "",
-    });
+    // ✅ ใช้ Headers เพื่อส่งข้อมูลไปยัง API แทนการแก้ไข body
+    const requestHeaders = new Headers(request.headers);
+    requestHeaders.set('X-User-ID', payload.user_id);
+    requestHeaders.set('X-User-Email', payload.email);
+    requestHeaders.set('X-User-Role', payload.role);
+    requestHeaders.set('X-User-Img', payload.img || "");
 
-    // ✅ ส่ง Request ใหม่พร้อม Body ที่แก้ไข
-    return new NextResponse(newBody, {
-      headers: {
-        'Content-Type': 'application/json',
+    return NextResponse.next({
+      request: {
+        headers: requestHeaders,
       },
     });
   } catch (error) {
     console.error('❌ Error in middleware:', error);
     return NextResponse.json({ message: 'Token ไม่ถูกต้อง', error: error.message }, { status: 403 });
+    
   }
 }
 
@@ -62,6 +60,7 @@ export async function middleware(request) {
 export const config = {
   matcher: [
     '/api/admin/:path*',  // ใช้กับ API ภายใต้ /api/admin/*
-    '/api/auth/me',       // ใช้กับ /api/auth/me
+    '/api/auth/me',
+    '/admin/dashboard/:path*',       // ใช้กับ /api/auth/me
   ],
 };

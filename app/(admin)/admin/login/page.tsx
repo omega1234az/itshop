@@ -4,7 +4,7 @@ import React, { useState, FormEvent, useEffect } from "react";
 import { setCookie, getCookie, deleteCookie } from "cookies-next";
 import Link from "next/link";
 
-const Login: React.FC = () => {
+const AdminLogin: React.FC = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
@@ -25,7 +25,9 @@ const Login: React.FC = () => {
       });
 
       const data = await res.json();
-      if (data.role == "customer") {
+      if (data.role == "admin") {
+        window.location.href = "/admin/dashboard";
+      } else if (data.role == "customer") {
         window.location.href = "/";
       }
     } catch (error) {
@@ -49,10 +51,10 @@ const Login: React.FC = () => {
 
       const data = await response.json();
 
-      if (response.ok) {
+      if (data.user.role == "admin") {
+        window.location.href = "/admin/dashboard";
+      } else if (data.user.role == "customer") {
         window.location.href = "/";
-      } else {
-        setErrorMessage(data.message);
       }
     } catch (error) {
       setErrorMessage("เกิดข้อผิดพลาดในการเข้าสู่ระบบ");
@@ -111,4 +113,4 @@ const Login: React.FC = () => {
   );
 };
 
-export default Login;
+export default AdminLogin;

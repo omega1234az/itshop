@@ -44,12 +44,12 @@ export async function POST(request) {
     // สร้าง JWT Token
     const token = await new SignJWT({ user_id: user.user_id, email: user.email, role: user.role, img: user.img })
       .setProtectedHeader({ alg: 'HS256' })
-      .setExpirationTime('7d')
+      .setExpirationTime('1d')
       .sign(new TextEncoder().encode(process.env.JWT_SECRET))
 
-    const cookie = `session_id=${token}; HttpOnly; Secure; Path=/; Max-Age=604800`
+    const cookie = `session_id=${token}; HttpOnly; Secure; Path=/; Max-Age=86400`
 
-    return new Response(
+    return new Response( 
       JSON.stringify({
         message: 'เข้าสู่ระบบสำเร็จ',
         user: {
