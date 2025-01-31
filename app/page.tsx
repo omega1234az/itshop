@@ -9,11 +9,11 @@ export default function Home() {
         <div className="border-b-2 border-black mt-5"></div>
 
         <div className="h-5 w-full grid grid-cols-5 gap-4 justify-items-stretch mt-8 font-bold">
-          <button className="bg-[#0294BD5C] p-2 w-full rounded-lg">Trending Product</button>
-          <button className="bg-[#0294BD5C] p-2 w-full rounded-lg ">Special Offers</button>
-          <button className="bg-[#0294BD5C] p-2 w-full rounded-lg">PC</button>
-          <button className="bg-[#0294BD5C] p-2 w-full rounded-lg">RAM</button>
-          <button className="bg-[#0294BD5C] p-2 w-full rounded-lg">VGA</button>
+          <button className="bg-teal-400 hover:bg-teal-500 p-2 w-full rounded-lg">Trending Product</button>
+          <button className="bg-teal-400 hover:bg-teal-500 rounded-lg ">Special Offers</button>
+          <button className="bg-teal-400 hover:bg-teal-500 rounded-lg">PC</button>
+          <button className="bg-teal-400 hover:bg-teal-500 rounded-lg">RAM</button>
+          <button className="bg-teal-400 hover:bg-teal-500 rounded-lg">VGA</button>
         </div>
 
         <div className="mt-10">
@@ -32,7 +32,7 @@ export default function Home() {
         </div>
         <div className="grid grid-cols-7 gap-4 mt-5">
           <div className="col-span-2 gap-y-2 grid grid-cols-1">
-            <button className="bg-[#0294BD5C] w-full justify-items-center rounded-lg p-3">
+            <button className="bg-teal-400 hover:bg-teal-500 w-full justify-items-center rounded-lg p-3">
               <p className="text-center font-bold w-full text-lg">Special Offers</p>
 
             </button>
@@ -43,7 +43,7 @@ export default function Home() {
           </div>
           <div className="col-span-5">
 
-            <button className="bg-[#0294BD5C] w-full justify-items-center rounded-lg p-3">
+            <button className="bg-teal-400 hover:bg-teal-500 w-full justify-items-center rounded-lg p-3">
               <p className="text-center font-bold w-full text-lg">Trending product</p>
 
             </button>
@@ -59,7 +59,7 @@ export default function Home() {
 
             </div>
             <div className="mt-5 grid grid-cols-3 gap-3">
-              <button className="bg-[#0294BD5C] w-full justify-items-center rounded-lg p-3 col-span-3 mt-3">
+              <button className="bg-teal-400 hover:bg-teal-500 w-full justify-items-center rounded-lg p-3 col-span-3 mt-3">
                 <p className=" text-center font-bold w-full text-lg">Top Catagory</p>
               </button>
               
@@ -73,7 +73,7 @@ export default function Home() {
           </div>
         </div>
         <div className="grid grid-cols-6 gap-3">
-          <button className="col-span-6 bg-[#0294BD5C] w-full justify-items-center rounded-lg p-3  mt-3">
+          <button className="col-span-6 bg-teal-400 hover:bg-teal-500 w-full justify-items-center rounded-lg p-3  mt-3">
             <p className=" text-center font-bold w-full text-lg">More Items</p>
           </button>
          
@@ -82,7 +82,7 @@ export default function Home() {
           <Item name="Amd" price={20} />
           <Item name="Amd" price={20} />
           <Item name="Amd" price={20} />
-          <button className="col-span-6 bg-[#0294BDD9] w-fit mx-auto  justify-items-center rounded-lg p-3  mt-3">
+          <button className="col-span-6 bg-teal-400 hover:bg-teal-500 w-fit mx-auto  justify-items-center rounded-lg p-3  mt-3">
             <p className=" text-center font-bold w-48 text-lg">More</p>
           </button>
         </div>
