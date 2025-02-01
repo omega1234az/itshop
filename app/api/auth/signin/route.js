@@ -49,8 +49,7 @@ export async function POST(request) {
 
     const cookie = `session_id=${token}; HttpOnly; Secure; Path=/; Max-Age=86400`
 
-    return new Response( 
-      JSON.stringify({
+    return Response.json(({
         message: 'เข้าสู่ระบบสำเร็จ',
         user: {
           user_id: user.user_id,
