@@ -28,7 +28,7 @@ export default function Forgot(){
               </div>
               <button
                 type="submit"
-                className="w-60 p-2 bg-[#0294BDD9] text-black rounded-lg hover:bg-blue-500 text-3xl font-bold ml-44"
+                className="w-60 p-2  text-black rounded-lg bg-teal-400 hover:bg-teal-500 text-3xl font-bold ml-48"
               >
                 <a href="/login">Confirm</a>
               </button>

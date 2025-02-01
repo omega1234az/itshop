@@ -2,7 +2,7 @@ export default function CreateAcc() {
   return (
     <div className="flex flex-col">
       <div className="flex-1 flex justify-center items-center mt-10">
-        <div className="w-[500px] h-[500px] p-5 border border-gray-300 rounded shadow-md bg-gray-200">
+        <div className="w-[500px] h-[500px] p-5 border border-gray-300 rounded shadow-md bg-gray-300">
           <h2 className="text-center mb-5 text-4xl font-bold">Create your Account</h2>
           <form>
             <div className="mb-6 text-2xl">
@@ -34,7 +34,7 @@ export default function CreateAcc() {
             </div>
             <button
               type="submit"
-              className="w-[250px] p-2 bg-[#92E3F1] text-black rounded-lg hover:bg-[#0294BDD9] text-3xl font-bold ml-[108px] border-solid border-2 border-[#0294BD5C]"
+              className="w-[250px] p-2 text-black rounded-lg bg-teal-400 hover:bg-teal-500 text-3xl font-bold ml-[108px]"
             >
               <a href="/login">Confirm</a>
             </button>

@@ -17,7 +17,7 @@ export default function Forgot(){
               </div>
               <button
                 type="submit"
-                className="w-60 p-2 bg-[#92E3F1] text-black rounded-lg hover:bg-[#0294BDD9] text-3xl font-bold ml-[108px] border-solid border-2 border-[#0294BD5C]"
+                className="w-60 p-2  text-black rounded-lg bg-teal-400 hover:bg-teal-500 text-3xl font-bold ml-[108px]"
               >
                 <a href="/OTPemail">Confirm</a>
               </button>

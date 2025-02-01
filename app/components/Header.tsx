@@ -114,7 +114,7 @@ export default function Header() {
                     )}
                 </div>
             ) : (
-                <Link className="bg-[#0294BD] p-2 rounded-lg" href="/login">
+                <Link className="bg-teal-400 hover:bg-teal-500 rounded-lg p-2 font-bold" href="/login">
                     Login
                 </Link>
             )}

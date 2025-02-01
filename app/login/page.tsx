@@ -94,7 +94,7 @@ const Login: React.FC = () => {
             </div>
             <button
               type="submit"
-              className="w-60 p-2 bg-[#92E3F1] text-black rounded-lg hover:bg-[#0294BDD9] ml-28 text-2xl font-bold border-solid border-2 border-[#0294BD5C]"
+              className="w-60 p-2  text-black rounded-lg bg-teal-400 hover:bg-teal-500 ml-28 text-2xl font-bold"
               disabled={loading}
             >
               {loading ? "กำลังเข้าสู่ระบบ..." : "Login"}
