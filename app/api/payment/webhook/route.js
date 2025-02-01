@@ -91,7 +91,13 @@ async function handleCheckoutSessionCompleted(session) {
                         increment: payment.amount
                     }
                 }
+            }); 
+            
+            await tx.cart.deleteMany({
+                where: { user_id: payment.user.user_id }
             });
+
+
         });
 
     } catch (error) {

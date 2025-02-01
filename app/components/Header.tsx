@@ -2,20 +2,8 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import {
-    getCookie,
-    getCookies,
-    setCookie,
-    deleteCookie,
-    hasCookie,
-    useGetCookies,
-    useSetCookie,
-    useHasCookie,
-    useDeleteCookie,
-    useGetCookie,
-  } from 'cookies-next/client';
 
-// กำหนด interface สำหรับข้อมูลผู้ใช้
+// interface สำหรับผู้ใช้
 interface User {
     user_id: number;
     name: string;
@@ -24,11 +12,11 @@ interface User {
 }
 
 export default function Header() {
-    const deleteCookie = useDeleteCookie();
     const [user, setUser] = useState<User | null>(null);
     const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
+    const [cartCount, setCartCount] = useState<number>(0);
 
-    // ฟังก์ชันสำหรับ fetch ข้อมูลผู้ใช้
+    // ดึงข้อมูลผู้ใช้
     useEffect(() => {
         async function fetchUser() {
             try {
@@ -37,32 +25,42 @@ export default function Header() {
                     headers: {
                         "Content-Type": "application/json",
                     },
-                    credentials: "include", // ส่ง Cookie ไปด้วย
+                    credentials: "include",
                 });
-    
-                if (res.status === 401 || res.status === 403) {
-                    console.log("User not authenticated"); // ไม่ใช่ข้อผิดพลาดจริง
-                    return; // ออกจากฟังก์ชันโดยไม่โยน error
-                }
-    
-                if (!res.ok) throw new Error("Failed to fetch");
-    
+
+                if (!res.ok) return;
                 const data = await res.json();
                 setUser(data);
             } catch (error) {
                 console.error("Error fetching user:", error);
             }
         }
-    
         fetchUser();
     }, []);
 
-    // ฟังก์ชัน logout: ลบคุกกี้ session_id
-    const handleLogout = async () => {
-        await fetch("/api/auth/logout", { method: "POST" });
-        window.location.reload(); // รีเฟรชหลังลบ Cookie
-      };
-      
+    // ดึงจำนวนสินค้าจาก API /api/cart
+    useEffect(() => {
+        async function fetchCartCount() {
+            if (!user) return; // ถ้ายังไม่มีข้อมูล user ไม่ต้อง fetch
+            try {
+                const res = await fetch("/api/cart", {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-User-ID": String(user.user_id), // ส่ง user_id ไปใน headers
+                    },
+                });
+
+                if (!res.ok) return;
+                const data = await res.json();
+                setCartCount(data.length); // สมมติว่า API คืนอาร์เรย์ของสินค้า
+            } catch (error) {
+                console.error("Error fetching cart:", error);
+            }
+        }
+
+        fetchCartCount();
+    }, [user]); // ทำงานเมื่อ user เปลี่ยนค่า
 
     return (
         <div className="mx-auto container grid grid-cols-10 text-center items-center gap-5">
@@ -72,11 +70,18 @@ export default function Header() {
             <Link href="/productlist">
                 <img src="/icon/search.png" alt="search" className="cursor-pointer" />
             </Link>
-            <Link href="/cart" className="ml-auto pr-10">
+
+            {/* แสดงจำนวนสินค้าบน icon ตะกร้า */}
+            <Link href="/cart" className="ml-auto pr-10 relative">
                 <img src="/icon/cart.png" alt="cart" className="cursor-pointer w-7" />
+                {cartCount > 0 && (
+                    <span className="absolute top-4 left-4 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                        {cartCount}
+                    </span>
+                )}
             </Link>
 
-            {/* ถ้ามี user ให้แสดงรูปโปรไฟล์และ dropdown */}
+            {/* แสดงข้อมูลผู้ใช้ */}
             {user ? (
                 <div className="relative">
                     <button
@@ -84,7 +89,7 @@ export default function Header() {
                         className="w-14 h-14 mt-2 rounded-full border border-gray-300 overflow-hidden"
                     >
                         <img
-                            src={`/uploads/profile/${user.img}`}
+                            src={`/uploads/profile/${user?.img}`}
                             alt="Profile"
                             className="w-full h-full object-cover"
                         />
@@ -103,7 +108,10 @@ export default function Header() {
                                 </li>
                                 <li>
                                     <button
-                                        onClick={handleLogout}
+                                        onClick={async () => {
+                                            await fetch("/api/auth/logout", { method: "POST" });
+                                            window.location.reload();
+                                        }}
                                         className="block w-full text-left px-4 py-2 text-red-500 hover:bg-gray-100"
                                     >
                                         Logout

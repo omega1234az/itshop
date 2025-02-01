@@ -61,6 +61,7 @@ export const config = {
   matcher: [
     '/api/admin/:path*',  // ใช้กับ API ภายใต้ /api/admin/*
     '/api/auth/me',
+    '/api/cart/:path*',
     '/admin/dashboard/:path*',       // ใช้กับ /api/auth/me
   ],
 };
