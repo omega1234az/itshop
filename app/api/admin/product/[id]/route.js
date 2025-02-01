@@ -5,7 +5,7 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 export async function PUT(req, { params }) {
-    const { id } = params;
+    const { id } = await params;
     const { name, description, price, stock, category_id, sub_category_id, img, status } = await req.json();
   
     try {
@@ -32,7 +32,7 @@ export async function PUT(req, { params }) {
   
   // สำหรับการลบสินค้า (DELETE)
   export async function DELETE(req, { params }) {
-    const { id } = params;
+    const { id } = await params;
   
     try {
       const deletedProduct = await prisma.products.update({
