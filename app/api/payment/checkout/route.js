@@ -142,16 +142,7 @@ export async function POST(req) {
             });
 
             
-            await Promise.all(productsWithQuantity.map(product =>
-                tx.products.update({
-                    where: { product_id: product.product_id },
-                    data: {
-                        total_sales: { increment: product.quantity },
-                        total_revenue: { increment: product.price * product.quantity },
-                        stock: { decrement: product.quantity },
-                    },
-                })
-            ));
+            
 
             
             

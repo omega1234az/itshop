@@ -3,7 +3,9 @@ import { useEffect, useState } from "react";
 import { loadStripe } from '@stripe/stripe-js';
 
 // Initialize Stripe outside of the component
-const stripePromise = loadStripe('pk_test_51QnYyiJiSSJHyIzsBjzVtmAOgosIwPAxAYUj9JNF9lAoJk8kq81n0cdzMmmWlIS45IYUHojLzBRHpDnGzCdxlDIJ00xHFhrcKg');
+const key = `${process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY}`;
+console.log(key);
+const stripePromise = loadStripe(key);
 
 interface User {
     user_id: number;
