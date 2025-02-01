@@ -100,7 +100,7 @@ export async function POST(req) {
 
         // สร้าง Stripe checkout session
         const session = await stripe.checkout.sessions.create({
-            payment_method_types: ['card'],
+            
             line_items,
             mode: 'payment',
             success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/success/${transaction_id}`,
@@ -141,7 +141,7 @@ export async function POST(req) {
                 },
             });
 
-            // อัพเดตข้อมูลสินค้า
+            
             await Promise.all(productsWithQuantity.map(product =>
                 tx.products.update({
                     where: { product_id: product.product_id },
@@ -153,13 +153,8 @@ export async function POST(req) {
                 })
             ));
 
-            // อัพเดต total_spent ของ user
-            await tx.users.update({
-                where: { user_id: user.user_id },
-                data: {
-                    total_spent: { increment: total_order_price },
-                },
-            });
+            
+            
 
             return newOrder;
         });
