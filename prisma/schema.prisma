@@ -72,6 +72,7 @@ model orders {
   status         String    @default("pending")
   payment_status String    @default("pending")
   order_date     DateTime  @default(now()) @db.Timestamp()
+  address        String    @default("Error: Address not provided")
   total_order_price Float @default(0)
   user           users     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
   order_details  order_details[]

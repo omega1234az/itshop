@@ -25,7 +25,7 @@ const Login: React.FC = () => {
       });
 
       const data = await res.json();
-      if (data.role == "customer") {
+      if (data.user.role == "customer") {
         window.location.href = "/";
       }
     } catch (error) {
