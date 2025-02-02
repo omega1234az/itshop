@@ -83,6 +83,22 @@ async function handleCheckoutSessionCompleted(session) {
                 }
             });
 
+            // หัก stock จากสินค้า
+            const orderDetails = await tx.order_details.findMany({
+                where: { order_id: payment.order.order_id }
+            });
+
+            await Promise.all(orderDetails.map(detail =>
+                tx.products.update({
+                    where: { product_id: detail.product_id },
+                    data: {
+                        stock: { decrement: detail.quantity }, // หักจำนวน stock
+                        total_sales: { increment: detail.quantity }, // เพิ่มยอดขาย
+                        total_revenue: { increment: detail.price * detail.quantity }, // เพิ่มรายได้
+                    },
+                })
+            ));
+
             // อัพเดต total_spent ของ user
             await tx.users.update({
                 where: { user_id: payment.user.user_id },
@@ -91,20 +107,20 @@ async function handleCheckoutSessionCompleted(session) {
                         increment: payment.amount
                     }
                 }
-            }); 
+            });
             
             await tx.cart.deleteMany({
                 where: { user_id: payment.user.user_id }
             });
 
-
         });
-
     } catch (error) {
         console.error('Failed to handle checkout session:', error);
         throw error;
     }
 }
+
+
 
 async function handlePaymentIntentSucceeded(paymentIntent) {
     try {
@@ -135,6 +151,22 @@ async function handlePaymentIntentSucceeded(paymentIntent) {
                 }
             });
 
+            // หัก stock จากสินค้า
+            const orderDetails = await tx.order_details.findMany({
+                where: { order_id: payment.order.order_id }
+            });
+
+            await Promise.all(orderDetails.map(detail =>
+                tx.products.update({
+                    where: { product_id: detail.product_id },
+                    data: {
+                        stock: { decrement: detail.quantity }, // หักจำนวน stock
+                        total_sales: { increment: detail.quantity }, // เพิ่มยอดขาย
+                        total_revenue: { increment: detail.price * detail.quantity }, // เพิ่มรายได้
+                    },
+                })
+            ));
+
             // อัพเดต total_spent ของ user
             await tx.users.update({
                 where: { user_id: payment.user.user_id },
@@ -151,6 +183,7 @@ async function handlePaymentIntentSucceeded(paymentIntent) {
         throw error;
     }
 }
+
 
 async function handlePaymentIntentFailed(paymentIntent) {
     try {
