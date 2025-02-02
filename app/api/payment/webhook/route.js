@@ -10,8 +10,7 @@ const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 export async function POST(req) {
     try {
         const body = await req.text();
-        const signature = headers().get('stripe-signature');
-
+        const signature = await headers().get('stripe-signature');
         let event;
         try {
             event = stripe.webhooks.constructEvent(
@@ -121,6 +120,7 @@ async function handleCheckoutSessionCompleted(session) {
                     data: {
                         total_sales: { increment: detail.quantity },
                         total_revenue: { increment: detail.price * detail.quantity },
+                        stock: { decrement: detail.quantity }
                     },
                 })
             ));
