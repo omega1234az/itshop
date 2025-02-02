@@ -131,6 +131,7 @@ export async function POST(req) {
                             payment_method: 'card',
                             payment_status: 'pending',
                             transaction_id,
+                            session_id: session.id,
                             amount: total_order_price,
                         },
                     },

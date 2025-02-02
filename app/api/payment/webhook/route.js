@@ -10,8 +10,7 @@ const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 export async function POST(req) {
     try {
         const body = await req.text();
-        const signature = headers().get('stripe-signature');
-
+        const signature = await headers().get('stripe-signature');
         let event;
         try {
             event = stripe.webhooks.constructEvent(
@@ -57,16 +56,37 @@ export async function POST(req) {
 
 async function handleCheckoutSessionCompleted(session) {
     try {
+        // ดึง transaction_id จาก success_url
         const urlParts = session.success_url.split('/');
         const transaction_id = urlParts[urlParts.length - 1];
 
+        // ตรวจสอบว่ามี transaction_id
+        if (!transaction_id) {
+            console.error('No transaction_id found in success_url');
+            return;
+        }
+
         await prisma.$transaction(async (tx) => {
+            // หา payment ก่อนอัพเดท
+            const existingPayment = await tx.payments.findUnique({
+                where: { transaction_id },
+                include: {
+                    order: true,
+                    user: true
+                }
+            });
+
+            if (!existingPayment) {
+                throw new Error(`Payment not found for transaction_id: ${transaction_id}`);
+            }
+
             // อัพเดตสถานะการชำระเงิน
             const payment = await tx.payments.update({
                 where: { transaction_id },
                 data: {
                     payment_status: 'completed',
                     payment_date: new Date(),
+                    session_id: session.id  // ใช้ session.id จาก Stripe
                 },
                 include: {
                     order: true,
@@ -83,37 +103,39 @@ async function handleCheckoutSessionCompleted(session) {
                 }
             });
 
-            // หัก stock จากสินค้า
-            const orderDetails = await tx.order_details.findMany({
-                where: { order_id: payment.order.order_id }
-            });
-
-            await Promise.all(orderDetails.map(detail =>
-                tx.products.update({
-                    where: { product_id: detail.product_id },
-                    data: {
-                        stock: { decrement: detail.quantity }, // หักจำนวน stock
-                        total_sales: { increment: detail.quantity }, // เพิ่มยอดขาย
-                        total_revenue: { increment: detail.price * detail.quantity }, // เพิ่มรายได้
-                    },
-                })
-            ));
-
-            // อัพเดต total_spent ของ user
-            await tx.users.update({
-                where: { user_id: payment.user.user_id },
-                data: {
-                    total_spent: {
-                        increment: payment.amount
-                    }
-                }
-            });
-            
+            // ลบสินค้าในตะกร้า
             await tx.cart.deleteMany({
                 where: { user_id: payment.user.user_id }
             });
 
+            // อัพเดตสถิติการขาย
+            const orderDetails = await tx.order_details.findMany({
+                where: { order_id: payment.order.order_id }
+            });
+
+            // อัพเดตข้อมูลสินค้าทั้งหมดพร้อมกัน
+            await Promise.all(orderDetails.map(detail =>
+                tx.products.update({
+                    where: { product_id: detail.product_id },
+                    data: {
+                        total_sales: { increment: detail.quantity },
+                        total_revenue: { increment: detail.price * detail.quantity },
+                        stock: { decrement: detail.quantity }
+                    },
+                })
+            ));
+
+            // อัพเดตยอดใช้จ่ายของ user
+            await tx.users.update({
+                where: { user_id: payment.user.user_id },
+                data: {
+                    total_spent: { increment: payment.amount }
+                }
+            });
         });
+
+        console.log(`Successfully processed payment for transaction: ${transaction_id}`);
+
     } catch (error) {
         console.error('Failed to handle checkout session:', error);
         throw error;
