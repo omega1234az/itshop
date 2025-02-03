@@ -96,7 +96,7 @@ model payments {
   payment_method String
   payment_status String @default("pending")
   transaction_id String @unique
-  session_id String @default("error")
+  session_id String @unique
   amount       Float
   payment_date DateTime @default(now()) @db.Timestamp()
   order        orders    @relation(fields: [order_id], references: [order_id], onDelete: Cascade)

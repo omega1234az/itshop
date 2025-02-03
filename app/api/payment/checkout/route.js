@@ -104,7 +104,9 @@ export async function POST(req) {
             line_items,
             mode: 'payment',
             success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/success/${transaction_id}`,
-            cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/cancel`,
+            cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/cancel/${transaction_id}`,
+            metadata: {transaction_id : transaction_id},
+            expires_at: Math.floor(Date.now() / 1000) + 60 * 30,
         });
 
         // Begin transaction
