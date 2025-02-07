@@ -50,39 +50,41 @@ export default function Home() {
         </div>
 
         <div className="w-full grid grid-cols-7 gap-4 font-bold mt-5">
-        {categories.map((categories) => (
-                <Category key={categories.category_id} id={categories.category_id} name={categories.name} price={categories.price}  img={categories.img}/>
-              ))}
+          {categories.map((categories) => (
+            <Category key={categories.category_id} id={categories.category_id} name={categories.name} price={categories.price} img={categories.img} />
+          ))}
         </div>
 
         <div className="grid grid-cols-7 gap-4 mt-5">
           {/* Special Offers (คงที่) */}
+          {/* Special Offers (คงที่) */}
           <div className="col-span-2 gap-y-2 grid grid-cols-1">
-            <button className="bg-teal-400 hover:bg-teal-500 w-full rounded-lg p-3">
-              <p className="text-center font-bold w-full text-lg">Special Offers</p>
-            </button>
-            <Item name="Amd" price={20} />
-            <Item name="Amd" price={20} />
-            <Item name="Amd" price={20} />
+            <div className="bg-teal-400 hover:bg-teal-500 w-full rounded-lg p-3">
+              <p className="text-center font-bold w-full text-lg">สินค้าใหม่</p>
+            </div>
+            {products.slice(-3).map((product) => (
+              <Item key={product.product_id} id={product.product_id} name={product.name} price={product.price} img={product.img} />
+            ))}
           </div>
+
 
           {/* Trending Products */}
           <div className="col-span-5">
-            <button className="bg-teal-400 hover:bg-teal-500 w-full rounded-lg p-3">
-              <p className="text-center font-bold w-full text-lg">Trending Product</p>
-            </button>
+            <div className="bg-teal-400 hover:bg-teal-500 w-full rounded-lg p-3">
+              <p className="text-center font-bold w-full text-lg">สินค้ายอดนิยม</p>
+            </div>
             <div className="grid grid-cols-4 gap-2">
               {trendingProducts.map((product) => (
-                <Item key={product.product_id} id={product.product_id} name={product.name} price={product.price} />
+                <Item key={product.product_id} id={product.product_id} name={product.name} price={product.price} img={product.img} />
               ))}
             </div>
 
             <div className="mt-5 grid grid-cols-3 gap-3">
-              <button className="bg-teal-400 hover:bg-teal-500 w-full rounded-lg p-3 col-span-3 mt-3">
-                <p className="text-center font-bold w-full text-lg">Top Category</p>
-              </button>
+              <div className="bg-teal-400 hover:bg-teal-500 w-full rounded-lg p-3 col-span-3 mt-3">
+                <p className="text-center font-bold w-full text-lg">หมวดหมู่ยอดนิยม</p>
+              </div>
               {topcategories.map((topcategories) => (
-                <Category key={topcategories.category_id} id={topcategories.category_id} name={topcategories.name} price={topcategories.price}  img={topcategories.img}/>
+                <Category  key={topcategories.category_id} id={topcategories.category_id} name={topcategories.name} price={topcategories.price} img={topcategories.img}  />
               ))}
             </div>
           </div>
@@ -90,12 +92,12 @@ export default function Home() {
 
         {/* All Products */}
         <div className="grid grid-cols-6 gap-3">
-          <button className="col-span-6 bg-teal-400 hover:bg-teal-500 w-full rounded-lg p-3 mt-3">
-            <p className="text-center font-bold w-full text-lg">More Items</p>
-          </button>
+          <div className="col-span-6 bg-teal-400 hover:bg-teal-500 w-full rounded-lg p-3 mt-3">
+            <p className="text-center font-bold w-full text-lg">สินค้าอื่นๆ</p>
+          </div>
 
           {products.map((product) => (
-            <Item key={product.product_id} id={product.product_id} name={product.name} price={product.price} />
+            <Item key={product.product_id} id={product.product_id} name={product.name} price={product.price} img={product.img} />
           ))}
 
           <button className="col-span-6 bg-teal-400 hover:bg-teal-500 w-fit mx-auto rounded-lg p-3 mt-3">

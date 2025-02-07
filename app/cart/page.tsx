@@ -98,7 +98,7 @@ export default function Cart() {
                             key={item.cart_id}
                             className={`grid grid-cols-2 items-center border p-4 rounded-lg shadow-md mb-3 ${item.out_of_stock ? "bg-gray-200 opacity-75" : ""}`}
                         >
-                            <img className="w-40" src={`/product/${item.product.img}`} alt={item.product.name} />
+                            <img className="w-40" src={item.product.img} alt={item.product.name} />
                             <div>
                                 <p className="font-semibold">{item.product.name}</p>
                                 <p className="text-red-500 font-bold mt-2">ราคา {item.product.price.toLocaleString()}.-</p>

@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useParams } from 'next/navigation';
+import Swal from "sweetalert2";
 
 export default function ProductDetail() {
   const router = useRouter();
@@ -40,9 +41,18 @@ export default function ProductDetail() {
       });
 
       if (response.ok) {
-        alert("เพิ่มสินค้าเข้าตะกร้าแล้ว!");
+        Swal.fire({
+          title: "เพิ่มสินค้าเข้าตะกร้าแล้ว!",
+          icon: "success",
+          confirmButtonText: "ตกลง",
+        });
       } else {
-        alert("เกิดข้อผิดพลาดในการเพิ่มสินค้า");
+        Swal.fire({
+          title: "เกิดข้อผิดพลาด!",
+          text: "ไม่สามารถเพิ่มสินค้าเข้าตะกร้าได้",
+          icon: "error",
+          confirmButtonText: "ลองอีกครั้ง",
+        });
       }
     } catch (error) {
       console.error("Error adding to cart:", error);
@@ -63,69 +73,78 @@ export default function ProductDetail() {
   }
 
   return (
-    <>
-      <div className="flex flex-col">
-        <div className="flex-1 flex flex-row justify-center container mt-10">
-          <div className="ml-48 mr-auto">
-            <img
-              src={product.img}
-              alt={product.name}
-              className="w-72 object-cover mx-auto border-1 border-gray-300 shadow-lg rounded-lg"
-            />
-          </div>
-          <div className="mr-96">
-            <h1 className="font-bold text-4xl mb-5">{product.name}</h1>
-            <h1 className="text-xl font-semibold text-gray-700">Product Description:</h1>
-            <div className="w-96 h-48 mt-5 p-3 border-2 border-gray-300 rounded-lg shadow-md">
-              <h1 className="text-base break-words">{product.description}</h1>
-            </div>
-            <div>
-              <h1 className="mt-5 font-bold text-2xl">{product.price.toLocaleString()} บาท</h1>
-            </div>
-
-            {/* ปุ่มเพิ่ม/ลดจำนวนสินค้า */}
-            <div className="flex items-center mt-4">
-              <button
-                className="px-3 py-1 bg-gray-300 rounded-l"
-                onClick={() => setQuantity((prev) => Math.max(prev - 1, 1))}
-              >
-                -
-              </button>
-              <span className="px-5 py-1 border">{quantity}</span>
-              <button
-                className="px-3 py-1 bg-gray-300 rounded-r"
-                onClick={() => setQuantity((prev) => Math.min(prev + 1, product.stock))}
-              >
-                +
-              </button>
-            </div>
-
-            {/* ปุ่มเพิ่มเข้าตะกร้า */}
-            <button
-              onClick={handleAddToCart}
-              className="mt-3 bg-teal-400 hover:bg-teal-500 p-2 rounded-lg font-semibold"
-            >
-              Add to Cart
-            </button>
-
-            {/* ปุ่มซื้อเลย */}
-            <button
-              onClick={handleBuyNow}
-              className="mt-3 ml-3 bg-orange-500 hover:bg-orange-600 p-2 rounded-lg font-semibold text-white"
-            >
-              ซื้อเลย
-            </button>
-          </div>
+    <div className="container mx-auto px-4 py-10">
+      {/* Product Image & Description Section */}
+      <div className="flex flex-col lg:flex-row items-center space-y-10 lg:space-y-0">
+        <div className="flex-shrink-0">
+          <img
+            src={product.img}
+            alt={product.name}
+            className="w-80 h-80 object-contain rounded-lg shadow-xl border-2 border-gray-300"
+          />
         </div>
+        <div className="lg:ml-10 space-y-6">
+          <h1 className="text-4xl font-extrabold text-gray-800">{product.name}</h1>
+          
+          {/* Product Info (หมวดหมู่, แบรนด์, สต็อก, ยอดขาย) */}
+          <div className="text-lg text-gray-700 space-y-2">
+            <p>หมวดหมู่: {product.category.name}</p>
+            <p>แบรนด์: {product.sub_category.name}</p>
+            
+            
+          </div>
+          
+          <div>
+            <h2 className="text-2xl font-bold text-teal-600">{product.price.toLocaleString()} บาท</h2>
+          </div>
 
-        <div className="ml-48 mt-20">
-          <h1 className="font-semibold text-3xl">สเป็กเครื่อง</h1>
-          <p>หมวดหมู่: {product.category.name}</p>
-          <p>แบรนด์: {product.sub_category.name}</p>
-          <p>สต็อก: {product.stock} ชิ้น</p>
-          <p>ยอดขาย: {product.total_sales} ชิ้น</p>
+          {/* Quantity Selector */}
+          <div className="flex items-center space-x-4">
+            <button
+              className="px-4 py-2 bg-gray-200 rounded-full hover:bg-gray-300"
+              onClick={() => setQuantity((prev) => Math.max(prev - 1, 1))}
+            >
+              -
+            </button>
+            <span className="px-4 py-2 text-lg border rounded-full">{quantity}</span>
+            <button
+              className="px-4 py-2 bg-gray-200 rounded-full hover:bg-gray-300"
+              onClick={() => setQuantity((prev) => Math.min(prev + 1, product.stock))}
+            >
+              +
+            </button>
+            <p>คงเหลือ : {product.stock} ชิ้น</p>
+          </div>
+          
+
+          {/* Add to Cart and Buy Now Buttons */}
+          <div className="mt-5 flex items-center space-x-4">
+  <button
+    onClick={handleAddToCart}
+    className="px-6 py-3 bg-teal-500 hover:bg-teal-600 text-white font-semibold rounded-lg shadow-md transition ease-in-out duration-300 transform hover:scale-105"
+  >
+    Add to Cart
+  </button>
+  <button
+    onClick={handleBuyNow}
+    className="px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-lg shadow-md transition ease-in-out duration-300 transform hover:scale-105"
+  >
+    ซื้อเลย
+  </button>
+  <p className="text-lg">ขายแล้ว : {product.total_sales} ชิ้น</p>
+</div>
+
+          
         </div>
       </div>
-    </>
+
+      {/* Product Description Section */}
+      <div className="mt-10">
+        <p className="text-xl text-gray-600">Product Description:</p>
+        <div className="w-full h-48 p-4 border-2 border-gray-300 rounded-lg shadow-md overflow-auto">
+          <p className="text-sm text-gray-700">{product.description}</p>
+        </div>
+      </div>
+    </div>
   );
 }

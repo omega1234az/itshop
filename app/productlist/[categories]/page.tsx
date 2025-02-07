@@ -109,7 +109,7 @@ export default function Productlist() {
           <option value="desc">Price: High to Low</option>
         </select>
         <button onClick={applyFilters} className="px-4 py-2 bg-blue-500 text-white rounded">
-          Apply Filters
+          ค้นหา
         </button>
       </section>
 
@@ -117,7 +117,7 @@ export default function Productlist() {
       <div className="w-full grid grid-cols-5 gap-5">
         {products.length > 0 ? (
           products.map((product) => (
-            <Item key={product.product_id} id={product.product_id} name={product.name} price={product.price} />
+            <Item key={product.product_id} id={product.product_id} name={product.name} price={product.price} img={product.img} />
           ))
         ) : (
           <p className="col-span-5 text-center">No products found</p>

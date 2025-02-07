@@ -89,7 +89,7 @@ export default function Header() {
                         className="w-14 h-14 mt-2 rounded-full border border-gray-300 overflow-hidden"
                     >
                         <img
-                            src={`/uploads/profile/${user?.img}`}
+                            src={user?.img}
                             alt="Profile"
                             className="w-full h-full object-cover"
                         />

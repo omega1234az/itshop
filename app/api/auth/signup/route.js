@@ -31,7 +31,7 @@ export async function POST(request) {
     // อัปเดตรูปภาพหลังจากที่ user ถูกสร้างแล้ว
     const updatedUser = await prisma.users.update({
       where: { user_id: user.user_id },
-      data: { img: user.user_id + ".jpg" }
+      data: { img: "default.jpg" }
     })
 
     return await Response.json({ 

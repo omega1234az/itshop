@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
-    const limit = parseInt(searchParams.get('limit')) || 10; // กำหนดค่าเริ่มต้นเป็น 10 ถ้าไม่มีการส่งค่า limit มา
+    const limit = parseInt(searchParams.get('limit')) || 8; // กำหนดค่าเริ่มต้นเป็น 10 ถ้าไม่มีการส่งค่า limit มา
 
     // ✅ ดึงข้อมูลสินค้าตามจำนวนที่กำหนดและเรียงตาม view_count
     const products = await prisma.products.findMany({
