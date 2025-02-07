@@ -33,17 +33,7 @@ export default function Home() {
       <div className="container mx-auto">
         <div className="border-b-2 border-black mt-5"></div>
 
-        <div className="h-5 w-full grid grid-cols-5 gap-4 justify-items-stretch mt-8 font-bold">
-          <button className="bg-teal-400 hover:bg-teal-500 p-2 w-full rounded-lg">
-            Trending Product
-          </button>
-          <button className="bg-teal-400 hover:bg-teal-500 rounded-lg">
-            Special Offers
-          </button>
-          <button className="bg-teal-400 hover:bg-teal-500 rounded-lg">PC</button>
-          <button className="bg-teal-400 hover:bg-teal-500 rounded-lg">RAM</button>
-          <button className="bg-teal-400 hover:bg-teal-500 rounded-lg">VGA</button>
-        </div>
+        
 
         <div className="mt-10">
           <img src="/banner/banner.jpg" alt="" className="h-40 w-full object-cover" />
@@ -60,7 +50,7 @@ export default function Home() {
           {/* Special Offers (คงที่) */}
           <div className="col-span-2 gap-y-2 grid grid-cols-1">
             <div className="bg-teal-400 hover:bg-teal-500 w-full rounded-lg p-3">
-              <p className="text-center font-bold w-full text-lg">สินค้าใหม่</p>
+              <p className="text-center font-bold w-full text-lg">สินค้าใหม่ ! ! !</p>
             </div>
             {products.slice(-3).map((product) => (
               <Item key={product.product_id} id={product.product_id} name={product.name} price={product.price} img={product.img} />
@@ -80,8 +70,8 @@ export default function Home() {
             </div>
 
             <div className="mt-5 grid grid-cols-3 gap-3">
-              <div className="bg-teal-400 hover:bg-teal-500 w-full rounded-lg p-3 col-span-3 mt-3">
-                <p className="text-center font-bold w-full text-lg">หมวดหมู่ยอดนิยม</p>
+              <div className="bg-teal-400 hover:bg-teal-500 w-full rounded-lg p-3 col-span-3 my-3">
+                <p className="text-center font-bold w-full text-lg ">หมวดหมู่ยอดนิยม</p>
               </div>
               {topcategories.map((topcategories) => (
                 <Category  key={topcategories.category_id} id={topcategories.category_id} name={topcategories.name} price={topcategories.price} img={topcategories.img}  />

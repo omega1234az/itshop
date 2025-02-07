@@ -41,11 +41,12 @@ export default function ProductDetail() {
       });
 
       if (response.ok) {
-        Swal.fire({
+        await Swal.fire({
           title: "เพิ่มสินค้าเข้าตะกร้าแล้ว!",
           icon: "success",
           confirmButtonText: "ตกลง",
         });
+        await window.location.reload(); // รีโหลดหน้าเพื่ออัปเดตข้อมูล
       } else {
         Swal.fire({
           title: "เกิดข้อผิดพลาด!",

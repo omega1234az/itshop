@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-
+import Swal from "sweetalert2";
 interface CartItem {
     cart_id: number;
     user_id: number;
@@ -23,7 +23,8 @@ export default function Cart() {
     const [cartItems, setCartItems] = useState<CartItem[]>([]);
     const [totalPrice, setTotalPrice] = useState(0);
     const [totalQuantity, setTotalQuantity] = useState(0);
-    const hasOutOfStock = cartItems.some((item) => item.out_of_stock);
+
+    // ลบสินค้าออกจากตะกร้า
     const deleteCartItem = async (cart_id: number) => {
         try {
             const res = await fetch(`/api/cart/${cart_id}`, {
@@ -33,17 +34,53 @@ export default function Cart() {
                 },
                 credentials: "include",
             });
-    
+
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || "Error deleting item");
-    
-            alert("ลบสินค้าออกจากตะกร้าเรียบร้อย");
+
+            Swal.fire({
+                icon: 'success',
+                title: 'ลบสินค้าออกจากตะกร้าเรียบร้อย',
+                text: 'สินค้าถูกลบจากตะกร้าแล้ว',
+                confirmButtonText: 'ตกลง',
+            });
             setCartItems(cartItems.filter((item) => item.cart_id !== cart_id)); // อัปเดตตะกร้า
         } catch (error) {
             console.error("Error deleting cart item:", error);
+            Swal.fire({
+                icon: 'error',
+                title: 'เกิดข้อผิดพลาด',
+                text: 'ไม่สามารถลบสินค้าจากตะกร้าได้',
+                confirmButtonText: 'ตกลง',
+            });
         }
     };
 
+    // อัปเดตจำนวนสินค้าในตะกร้า
+    const updateCartItemQuantity = async (cart_id: number, quantity: number) => {
+        try {
+            const res = await fetch(`/api/cart`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ cart_id, quantity }),
+                credentials: "include",
+            });
+
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || "Error updating item quantity");
+
+            // อัปเดตข้อมูลตะกร้า
+            setCartItems(cartItems.map((item) => 
+                item.cart_id === cart_id ? { ...item, quantity } : item
+            ));
+        } catch (error) {
+            console.error("Error updating cart item:", error);
+        }
+    };
+
+    // ดึงข้อมูลสินค้าในตะกร้า
     const fetchCartItems = async () => {
         try {
             const res = await fetch("/api/cart", {
@@ -53,27 +90,26 @@ export default function Cart() {
                 },
                 credentials: "include",
             });
-    
+
             if (!res.ok) {
                 throw new Error("Failed to fetch cart data");
             }
-    
+
             const data = await res.json();
-    
+
             // เช็คกรณีที่ไม่มีสินค้าในตระกร้า
             if (data.message === "No items found in cart") {
                 console.log("ไม่มีสินค้าในตระกร้า");
                 setCartItems([]); // หรือเปลี่ยนเส้นทางไปยังหน้าที่ต้องการ
                 return;
             }
-    
+
             setCartItems(data);
         } catch (error) {
             console.error("Error fetching cart items:", error);
             window.location.href = "/login"; // หรือกรณีที่ต้องการให้ไปหน้า login
         }
     };
-    
 
     useEffect(() => {
         fetchCartItems();
@@ -88,7 +124,6 @@ export default function Cart() {
 
     return (
         <div className="container mx-auto grid grid-cols-3 gap-5 mt-5">
-            {/* รายการสินค้า */}
             <div className="col-span-2 overflow-y-scroll max-h-screen h-fit">
                 <h2 className="text-lg font-bold mb-3">ตะกร้าสินค้า</h2>
                 <div className="border-b-2 border-black mb-3"></div>
@@ -96,34 +131,45 @@ export default function Cart() {
                     cartItems.map((item) => (
                         <div
                             key={item.cart_id}
-                            className={`grid grid-cols-2 items-center border p-4 rounded-lg shadow-md mb-3 ${item.out_of_stock ? "bg-gray-200 opacity-75" : ""}`}
+                            className={`grid grid-cols-2 items-center border p-4 rounded-lg shadow-md mb-3`}
                         >
                             <img className="w-40" src={item.product.img} alt={item.product.name} />
                             <div>
                                 <p className="font-semibold">{item.product.name}</p>
                                 <p className="text-red-500 font-bold mt-2">ราคา {item.product.price.toLocaleString()}.-</p>
-                                <p className="mt-1">จำนวน: {item.quantity}</p>
-                                {item.out_of_stock && (
-                                    <p className="text-red-600 font-bold mt-2">สินค้าหมด</p>
-                        
-                                )}
-                                {item.out_of_stock && (
-                                    <div className="w-full text-right">
-                                        <button onClick={() => deleteCartItem(item.cart_id)} className="text-red-600 font-bold mt-2  text-right px-5 bg-red-200">ลบ</button>
-                                    </div>
-                                    
-                        
-                                )}
+                                <div className="flex items-center mt-5">
+                                    <button
+                                        onClick={() => updateCartItemQuantity(item.cart_id, item.quantity - 1)}
+                                        disabled={item.quantity <= 1}
+                                        className="bg-gray-300 px-5 rounded-full disabled:bg-gray-400"
+                                    >
+                                        -
+                                    </button>
+                                    <span className="mx-3">{item.quantity}</span>
+                                    <button
+                                        onClick={() => updateCartItemQuantity(item.cart_id, item.quantity + 1)}
+                                        className="bg-gray-300 px-5 rounded-full"
+                                    >
+                                        +
+                                    </button>
+                                </div>
+
+                                <div className="w-full text-right">
+                                    <button 
+                                        onClick={() => deleteCartItem(item.cart_id)} 
+                                        className="text-red-600 font-bold mt-2 text-right px-5 bg-red-200 hover:bg-red-300 transition duration-200 rounded-lg"
+                                    >
+                                        ลบ
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     ))
                 ) : (
                     <p className="text-center text-gray-500">ไม่มีสินค้าในตะกร้า</p>
                 )}
-
             </div>
 
-            {/* สรุปยอดรวม */}
             <div className="col-span-1 bg-gray-100 p-5 rounded-lg shadow-md h-fit">
                 <h2 className="text-lg font-bold mb-3">สรุปยอดรวม</h2>
                 <div className="border-b-2 border-black mb-3"></div>
@@ -145,17 +191,13 @@ export default function Cart() {
                     <span>รวมทั้งหมด:</span>
                     <span>{totalPrice.toLocaleString()}.-</span>
                 </div>
-                <a href={hasOutOfStock ? "#" : "/payment"}>
-    <button 
-        className={`w-full text-white py-2 mt-4 rounded-lg transition duration-200 
-            ${hasOutOfStock ? "bg-gray-400 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600"}
-        `}
-        disabled={hasOutOfStock}
-    >
-        ดำเนินการสั่งซื้อ
-    </button>
-</a>
-
+                <a href="/payment">
+                    <button 
+                        className="w-full text-white py-2 mt-4 rounded-lg transition duration-200 bg-blue-500 hover:bg-blue-600"
+                    >
+                        ดำเนินการสั่งซื้อ
+                    </button>
+                </a>
             </div>
         </div>
     );
