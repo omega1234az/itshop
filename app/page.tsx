@@ -51,7 +51,7 @@ export default function Home() {
 
         <div className="w-full grid grid-cols-7 gap-4 font-bold mt-5">
         {categories.map((categories) => (
-                <Category key={categories.category_id} name={categories.name} price={categories.price}  img={categories.img}/>
+                <Category key={categories.category_id} id={categories.category_id} name={categories.name} price={categories.price}  img={categories.img}/>
               ))}
         </div>
 
@@ -82,7 +82,7 @@ export default function Home() {
                 <p className="text-center font-bold w-full text-lg">Top Category</p>
               </button>
               {topcategories.map((topcategories) => (
-                <Category key={topcategories.category_id} name={topcategories.name} price={topcategories.price}  img={topcategories.img}/>
+                <Category key={topcategories.category_id} id={topcategories.category_id} name={topcategories.name} price={topcategories.price}  img={topcategories.img}/>
               ))}
             </div>
           </div>
