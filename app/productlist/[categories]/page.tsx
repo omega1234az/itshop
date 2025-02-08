@@ -84,7 +84,7 @@ export default function Productlist() {
       </div>
       <section className="filters flex gap-4 mb-4">
         <select value={selectedSub} onChange={(e) => setSelectedSub(e.target.value)}>
-          <option value="">เลือก Subcategory</option>
+          <option value="">เลือก หมวดหมู่</option>
           {subCategories.map((sub) => (
             <option key={sub.sub_category_id} value={sub.sub_category_id}>
               {sub.name}
@@ -93,20 +93,20 @@ export default function Productlist() {
         </select>
         <input
           type="number"
-          placeholder="Min Price"
+          placeholder="ราคาต่ำสุด"
           value={minPrice}
           onChange={(e) => setMinPrice(e.target.value)}
         />
         <input
           type="number"
-          placeholder="Max Price"
+          placeholder="ราคาสูงสุด"
           value={maxPrice}
           onChange={(e) => setMaxPrice(e.target.value)}
         />
         <select value={sort} onChange={(e) => setSort(e.target.value)}>
-          <option value="">Sort by</option>
-          <option value="asc">Price: Low to High</option>
-          <option value="desc">Price: High to Low</option>
+          <option value="">เรียงโดย</option>
+          <option value="asc">ราคา : น้อยไปมาก</option>
+          <option value="desc">ราคา : มากไปน้อย</option>
         </select>
         <button onClick={applyFilters} className="px-4 py-2 bg-blue-500 text-white rounded">
           ค้นหา

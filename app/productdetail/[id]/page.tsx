@@ -1,11 +1,11 @@
 "use client"
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+
 import { useParams } from 'next/navigation';
 import Swal from "sweetalert2";
 
 export default function ProductDetail() {
-  const router = useRouter();
+  ;
   const param = useParams<{ id: string }>();
   const id = param.id;
 
@@ -48,12 +48,40 @@ export default function ProductDetail() {
         });
         await window.location.reload(); // รีโหลดหน้าเพื่ออัปเดตข้อมูล
       } else {
-        Swal.fire({
-          title: "เกิดข้อผิดพลาด!",
-          text: "ไม่สามารถเพิ่มสินค้าเข้าตะกร้าได้",
-          icon: "error",
-          confirmButtonText: "ลองอีกครั้ง",
-        });
+        const errorData = await response.json();
+        if (response.status === 400) {
+          if (errorData.error === "Requested quantity exceeds available stock") {
+            await Swal.fire({
+              title: "สินค้าในสต็อกไม่เพียงพอ!",
+              html: `สินค้าในสต็อกมีเพียง ${errorData.available_stock} ชิ้น<br>กรุณาเลือกจำนวนใหม่`,
+              icon: "warning",
+              confirmButtonText: "ตกลง",
+            });
+            return;
+          }
+
+          if (errorData.error === "Total quantity exceeds available stock") {
+            await Swal.fire({
+              title: "เกินจำนวนสูงสุดที่สั่งได้!",
+              html: `คุณมีสินค้านี้ในตะกร้า ${errorData.current_total} ชิ้น<br>` +
+                `สามารถเพิ่มได้อีก ${errorData.maximum_additional} ชิ้น<br>` +
+                `(สินค้าในสต็อกมีทั้งหมด ${errorData.available_stock} ชิ้น)`,
+              icon: "warning",
+              confirmButtonText: "ตกลง",
+            });
+            return;
+          }
+
+          if (errorData.error === "Invalid product_id or quantity") {
+            await Swal.fire({
+              title: "ข้อมูลไม่ถูกต้อง!",
+              text: "กรุณาตรวจสอบจำนวนสินค้า",
+              icon: "error",
+              confirmButtonText: "ตกลง",
+            });
+            return;
+          }
+        }
       }
     } catch (error) {
       console.error("Error adding to cart:", error);
@@ -62,7 +90,7 @@ export default function ProductDetail() {
 
   const handleBuyNow = async () => {
     await handleAddToCart(); // เพิ่มเข้าตะกร้า
-    router.push("/cart"); // ไปหน้าตะกร้า
+    window.location.href = "/cart"; // ไปยังหน้าตะกร้า
   };
 
   if (loading) {
@@ -86,15 +114,15 @@ export default function ProductDetail() {
         </div>
         <div className="lg:ml-10 space-y-6">
           <h1 className="text-4xl font-extrabold text-gray-800">{product.name}</h1>
-          
+
           {/* Product Info (หมวดหมู่, แบรนด์, สต็อก, ยอดขาย) */}
           <div className="text-lg text-gray-700 space-y-2">
             <p>หมวดหมู่: {product.category.name}</p>
             <p>แบรนด์: {product.sub_category.name}</p>
-            
-            
+
+
           </div>
-          
+
           <div>
             <h2 className="text-2xl font-bold text-teal-600">{product.price.toLocaleString()} บาท</h2>
           </div>
@@ -116,26 +144,37 @@ export default function ProductDetail() {
             </button>
             <p>คงเหลือ : {product.stock} ชิ้น</p>
           </div>
-          
+
 
           {/* Add to Cart and Buy Now Buttons */}
           <div className="mt-5 flex items-center space-x-4">
-  <button
-    onClick={handleAddToCart}
-    className="px-6 py-3 bg-teal-500 hover:bg-teal-600 text-white font-semibold rounded-lg shadow-md transition ease-in-out duration-300 transform hover:scale-105"
-  >
-    Add to Cart
-  </button>
-  <button
-    onClick={handleBuyNow}
-    className="px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-lg shadow-md transition ease-in-out duration-300 transform hover:scale-105"
-  >
-    ซื้อเลย
-  </button>
-  <p className="text-lg">ขายแล้ว : {product.total_sales} ชิ้น</p>
-</div>
+            {product.stock > 0 ? (
+              <>
+                <button
+                  onClick={handleAddToCart}
+                  className="px-6 py-3 bg-teal-500 hover:bg-teal-600 text-white font-semibold rounded-lg shadow-md transition ease-in-out duration-300 transform hover:scale-105"
+                >
+                  ใส่ตะกร้า
+                </button>
+                <button
+                  onClick={handleBuyNow}
+                  className="px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-lg shadow-md transition ease-in-out duration-300 transform hover:scale-105"
+                >
+                  ซื้อเลย
+                </button>
+              </>
+            ) : (
+              <button
+                className="px-6 py-3 bg-gray-400 text-white font-semibold rounded-lg shadow-md cursor-not-allowed"
+                disabled
+              >
+                สินค้าหมด
+              </button>
+            )}
+            <p className="text-lg">ขายแล้ว : {product.total_sales} ชิ้น</p>
+          </div>
 
-          
+
         </div>
       </div>
 

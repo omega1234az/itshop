@@ -118,7 +118,7 @@ export default function Header() {
                 <div className="text-left text-sm">
                   <h4 className="font-semibold">{product.name}</h4>
                   <p>{product.description}</p>
-                  <p className="text-red-600">฿{product.price}</p>
+                  <p className="text-red-600">฿{product.price.toLocaleString()}</p>
                 </div>
               </a>
             ))}
