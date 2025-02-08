@@ -42,7 +42,7 @@ export default function Home() {
 
   return (
     <>
-      <div className="container mx-auto px-4 lg:px-0">
+      <div className="container mx-auto px-4 lg:px-0 ">
         <div className="border-b-2 border-black mt-5"></div>
 
         {/* Banner */}

@@ -143,7 +143,10 @@ export async function POST(req) {
                     payments: true,
                 },
             });
-
+            await tx.cart.deleteMany({
+                where: { user_id: user.user_id } // ใช้ user.user_id ที่รับเข้ามาจาก request
+            });
+            
             
             
 
