@@ -1,15 +1,35 @@
 "use client"; // สำหรับ Next.js App Router
 
 import { useEffect, useState } from "react";
-import { useSearchParams, useParams } from "next/navigation";
+import { useParams } from "next/navigation";
 import "./productlist.css";
 import Item from "../../components/item";
 
+// สร้าง interfaces สำหรับข้อมูลสินค้าและหมวดหมู่
+interface SubCategory {
+  sub_category_id: string;
+  name: string;
+}
+
+interface Category {
+  name: string;
+}
+
+interface Product {
+  product_id: number;
+  name: string;
+  price: number;
+  img: string;
+  sub_category_id: string;
+  sub_category: SubCategory;
+  category: Category;
+}
+
 export default function Productlist() {
   const { categories: category_id } = useParams<{ categories: string }>();
-  const [products, setProducts] = useState<any[]>([]); // เก็บข้อมูลสินค้า
-  const [allProducts, setAllProducts] = useState<any[]>([]); // เก็บข้อมูลสินค้าทั้งหมด
-  const [subCategories, setSubCategories] = useState<any[]>([]); // รายการ Subcategories
+  const [products, setProducts] = useState<Product[]>([]); // ใช้ประเภท Product[]
+  const [allProducts, setAllProducts] = useState<Product[]>([]); // ใช้ประเภท Product[]
+  const [subCategories, setSubCategories] = useState<SubCategory[]>([]); // ใช้ประเภท SubCategory[]
   const [categoryName, setCategoryName] = useState<string>(""); // ชื่อของหมวดหมู่
   const [selectedSub, setSelectedSub] = useState<string>(""); // Subcategory ที่เลือก
   const [minPrice, setMinPrice] = useState<string>(""); // ราคาต่ำสุด
@@ -25,7 +45,7 @@ export default function Productlist() {
       let url = `/api/product/categories/${category_id || 1}`;
       const res = await fetch(url);
       if (!res.ok) throw new Error("Failed to fetch");
-      const data = await res.json();
+      const data: Product[] = await res.json(); // ระบุประเภทของข้อมูลให้ TypeScript ทราบ
 
       setAllProducts(data);
       setProducts(data);
@@ -36,10 +56,10 @@ export default function Productlist() {
 
       // ดึง subcategories จากสินค้าที่ได้
       const uniqueSubCategories = Array.from(
-        new Set(data.map((p) => p.sub_category_id))
-      ).map((id) => ({
+        new Set(data.map((p: Product) => p.sub_category_id)) // ใช้ประเภท Product
+      ).map((id: string) => ({
         sub_category_id: id,
-        name: data.find((p) => p.sub_category?.sub_category_id === id)?.sub_category?.name || "Unknown",
+        name: data.find((p: Product) => p.sub_category.sub_category_id === id)?.sub_category?.name || "Unknown",
       }));
 
       setSubCategories(uniqueSubCategories);
@@ -53,24 +73,24 @@ export default function Productlist() {
 
     // กรองตาม Subcategory
     if (selectedSub) {
-      filteredData = filteredData.filter((p) => p.sub_category_id.toString() === selectedSub);
+      filteredData = filteredData.filter((p: Product) => p.sub_category_id.toString() === selectedSub);
     }
 
     // กรองราคาต่ำสุด
     if (minPrice) {
-      filteredData = filteredData.filter((p) => p.price >= parseFloat(minPrice));
+      filteredData = filteredData.filter((p: Product) => p.price >= parseFloat(minPrice));
     }
 
     // กรองราคาสูงสุด
     if (maxPrice) {
-      filteredData = filteredData.filter((p) => p.price <= parseFloat(maxPrice));
+      filteredData = filteredData.filter((p: Product) => p.price <= parseFloat(maxPrice));
     }
 
     // เรียงลำดับ
     if (sort === "asc") {
-      filteredData.sort((a, b) => a.price - b.price);
+      filteredData.sort((a: Product, b: Product) => a.price - b.price);
     } else if (sort === "desc") {
-      filteredData.sort((a, b) => b.price - a.price);
+      filteredData.sort((a: Product, b: Product) => b.price - a.price);
     }
 
     setProducts(filteredData);

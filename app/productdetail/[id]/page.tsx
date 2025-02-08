@@ -1,15 +1,34 @@
-"use client"
+"use client";
 import { useState, useEffect } from "react";
-
-import { useParams } from 'next/navigation';
+import { useParams } from "next/navigation";
 import Swal from "sweetalert2";
 
+// สร้าง interface สำหรับข้อมูล Product, Category, SubCategory
+interface CategoryType {
+  name: string;
+}
+
+interface SubCategoryType {
+  name: string;
+}
+
+interface ProductType {
+  product_id: number;
+  name: string;
+  price: number;
+  stock: number;
+  img: string;
+  description: string;
+  category: CategoryType;
+  sub_category: SubCategoryType;
+  total_sales: number;
+}
+
 export default function ProductDetail() {
-  ;
   const param = useParams<{ id: string }>();
   const id = param.id;
 
-  const [product, setProduct] = useState(null);
+  const [product, setProduct] = useState<ProductType | null>(null); // กำหนด type ให้เป็น ProductType หรือ null
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1); // จำนวนสินค้าที่จะซื้อ
 
@@ -119,8 +138,6 @@ export default function ProductDetail() {
           <div className="text-lg text-gray-700 space-y-2">
             <p>หมวดหมู่: {product.category.name}</p>
             <p>แบรนด์: {product.sub_category.name}</p>
-
-
           </div>
 
           <div>
@@ -144,7 +161,6 @@ export default function ProductDetail() {
             </button>
             <p>คงเหลือ : {product.stock} ชิ้น</p>
           </div>
-
 
           {/* Add to Cart and Buy Now Buttons */}
           <div className="mt-5 flex items-center space-x-4">
@@ -173,8 +189,6 @@ export default function ProductDetail() {
             )}
             <p className="text-lg">ขายแล้ว : {product.total_sales} ชิ้น</p>
           </div>
-
-
         </div>
       </div>
 
