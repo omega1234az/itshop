@@ -27,7 +27,7 @@ export default function Cart() {
     const [isUpdating, setIsUpdating] = useState<{ [key: number]: boolean }>({});
     const [lastUpdateTime, setLastUpdateTime] = useState<{ [key: number]: number }>({});
 
-    // ลบสินค้าออกจากตะกร้า
+    // Original functions remain the same
     const deleteCartItem = async (cart_id: number) => {
         if (isUpdating[cart_id]) return;
         
@@ -65,13 +65,11 @@ export default function Cart() {
         }
     };
 
-    // อัปเดตจำนวนสินค้าในตะกร้า
     const updateCartItemQuantity = async (cart_id: number, quantity: number) => {
         const now = Date.now();
         const lastUpdate = lastUpdateTime[cart_id] || 0;
         const timeDiff = now - lastUpdate;
         
-        // ป้องกันการกดถี่เกินไป (500ms)
         if (timeDiff < 500 || isUpdating[cart_id]) return;
         
         setIsUpdating(prev => ({ ...prev, [cart_id]: true }));
@@ -106,7 +104,6 @@ export default function Cart() {
         }
     };
 
-    // ดึงข้อมูลสินค้าในตะกร้า
     const fetchCartItems = async () => {
         try {
             const res = await fetch("/api/cart", {
@@ -147,86 +144,115 @@ export default function Cart() {
     }, [cartItems]);
 
     return (
-        <div className="container mx-auto grid grid-cols-3 gap-5 mt-5">
-            <div className="col-span-2 overflow-y-scroll max-h-screen h-fit">
-                <h2 className="text-lg font-bold mb-3">ตะกร้าสินค้า</h2>
-                <div className="border-b-2 border-black mb-3"></div>
-                {cartItems.length > 0 ? (
-                    cartItems.map((item) => (
-                        <div
-                            key={item.cart_id}
-                            className={`grid grid-cols-2 items-center border p-4 rounded-lg shadow-md mb-3 ${
-                                isUpdating[item.cart_id] ? 'opacity-50' : ''
-                            }`}
+        <div className="container mx-auto px-4 lg:px-0">
+            {/* Order Summary for Mobile - Fixed at Bottom */}
+            <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t p-4">
+                <div className="flex justify-between items-center mb-2">
+                    <span className="font-bold">รวมทั้งหมด: {totalPrice.toLocaleString()}.-</span>
+                    <a href="/payment">
+                        <button 
+                            className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg"
+                            disabled={cartItems.length === 0}
                         >
-                            <img className="w-40" src={item.product.img} alt={item.product.name} />
-                            <div>
-                                <p className="font-semibold">{item.product.name}</p>
-                                <p className="text-red-500 font-bold mt-2">ราคา {item.product.price.toLocaleString()}.-</p>
-                                <div className="flex items-center mt-5">
-                                    <button
-                                        onClick={() => updateCartItemQuantity(item.cart_id, item.quantity - 1)}
-                                        disabled={item.quantity <= 1 || isUpdating[item.cart_id]}
-                                        className="bg-gray-300 px-5 rounded-full disabled:bg-gray-400 disabled:cursor-not-allowed"
-                                    >
-                                        -
-                                    </button>
-                                    <span className="mx-3">{item.quantity}</span>
-                                    <button
-                                        onClick={() => updateCartItemQuantity(item.cart_id, item.quantity + 1)}
-                                        disabled={isUpdating[item.cart_id]}
-                                        className="bg-gray-300 px-5 rounded-full disabled:cursor-not-allowed"
-                                    >
-                                        +
-                                    </button>
-                                </div>
-
-                                <div className="w-full text-right">
-                                    <button 
-                                        onClick={() => deleteCartItem(item.cart_id)}
-                                        disabled={isUpdating[item.cart_id]}
-                                        className="text-red-600 font-bold mt-2 text-right px-5 bg-red-200 hover:bg-red-300 transition duration-200 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
-                                    >
-                                        ลบ
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    ))
-                ) : (
-                    <p className="text-center text-gray-500">ไม่มีสินค้าในตะกร้า</p>
-                )}
+                            สั่งซื้อ
+                        </button>
+                    </a>
+                </div>
             </div>
 
-            <div className="col-span-1 bg-gray-100 p-5 rounded-lg shadow-md h-fit">
-                <h2 className="text-lg font-bold mb-3">สรุปยอดรวม</h2>
-                <div className="border-b-2 border-black mb-3"></div>
+            {/* Main Content */}
+            <div className="lg:grid lg:grid-cols-3 gap-5 mt-5 pb-20 lg:pb-0">
+                {/* Cart Items */}
+                <div className="lg:col-span-2 mb-6 lg:mb-0">
+                    <h2 className="text-lg font-bold mb-3">ตะกร้าสินค้า</h2>
+                    <div className="border-b-2 border-black mb-3"></div>
+                    
+                    {cartItems.length > 0 ? (
+                        <div className="space-y-3">
+                            {cartItems.map((item) => (
+                                <div
+                                    key={item.cart_id}
+                                    className={`flex flex-col sm:flex-row items-center border p-4 rounded-lg shadow-md ${
+                                        isUpdating[item.cart_id] ? 'opacity-50' : ''
+                                    }`}
+                                >
+                                    <img 
+                                        className="w-32 sm:w-40 mb-4 sm:mb-0" 
+                                        src={item.product.img} 
+                                        alt={item.product.name} 
+                                    />
+                                    <div className="flex-1 w-full sm:ml-4">
+                                        <div className="flex justify-between items-start">
+                                            <p className="font-semibold">{item.product.name}</p>
+                                            <button 
+                                                onClick={() => deleteCartItem(item.cart_id)}
+                                                disabled={isUpdating[item.cart_id]}
+                                                className="text-red-600 font-bold px-3 py-1 bg-red-200 hover:bg-red-300 transition duration-200 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed ml-2"
+                                            >
+                                                ลบ
+                                            </button>
+                                        </div>
+                                        <p className="text-red-500 font-bold mt-2">ราคา {item.product.price.toLocaleString()}.-</p>
+                                        <div className="flex items-center justify-center sm:justify-start mt-4">
+                                            <button
+                                                onClick={() => updateCartItemQuantity(item.cart_id, item.quantity - 1)}
+                                                disabled={item.quantity <= 1 || isUpdating[item.cart_id]}
+                                                className="bg-gray-300 px-5 py-1 rounded-full disabled:bg-gray-400 disabled:cursor-not-allowed"
+                                            >
+                                                -
+                                            </button>
+                                            <span className="mx-3">{item.quantity}</span>
+                                            <button
+                                                onClick={() => updateCartItemQuantity(item.cart_id, item.quantity + 1)}
+                                                disabled={isUpdating[item.cart_id]}
+                                                className="bg-gray-300 px-5 py-1 rounded-full disabled:cursor-not-allowed"
+                                            >
+                                                +
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <p className="text-center text-gray-500">ไม่มีสินค้าในตะกร้า</p>
+                    )}
+                </div>
 
-                <div className="flex justify-between mb-2">
-                    <span>ยอดรวม:</span>
-                    <span className="font-bold">{totalPrice.toLocaleString()}.-</span>
-                </div>
-                <div className="flex justify-between mb-2">
-                    <span>จำนวน:</span>
-                    <span className="font-bold">{totalQuantity}</span>
-                </div>
-                <div className="flex justify-between mb-2">
-                    <span>ค่าจัดส่ง:</span>
-                    <span className="font-bold">ฟรี</span>
-                </div>
+                {/* Order Summary for Desktop */}
+                <div className="hidden lg:block bg-gray-100 p-5 rounded-lg shadow-md h-fit">
+                    <h2 className="text-lg font-bold mb-3">สรุปยอดรวม</h2>
+                    <div className="border-b-2 border-black mb-3"></div>
 
-                <div className="flex justify-between border-t pt-2 font-bold text-lg">
-                    <span>รวมทั้งหมด:</span>
-                    <span>{totalPrice.toLocaleString()}.-</span>
+                    <div className="space-y-2">
+                        <div className="flex justify-between">
+                            <span>ยอดรวม:</span>
+                            <span className="font-bold">{totalPrice.toLocaleString()}.-</span>
+                        </div>
+                        <div className="flex justify-between">
+                            <span>จำนวน:</span>
+                            <span className="font-bold">{totalQuantity}</span>
+                        </div>
+                        <div className="flex justify-between">
+                            <span>ค่าจัดส่ง:</span>
+                            <span className="font-bold">ฟรี</span>
+                        </div>
+
+                        <div className="flex justify-between border-t pt-2 font-bold text-lg">
+                            <span>รวมทั้งหมด:</span>
+                            <span>{totalPrice.toLocaleString()}.-</span>
+                        </div>
+                    </div>
+
+                    <a href="/payment">
+                        <button 
+                            className="w-full text-white py-2 mt-4 rounded-lg transition duration-200 bg-blue-500 hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                            disabled={cartItems.length === 0}
+                        >
+                            ดำเนินการสั่งซื้อ
+                        </button>
+                    </a>
                 </div>
-                <a href="/payment">
-                    <button 
-                        className="w-full text-white py-2 mt-4 rounded-lg transition duration-200 bg-blue-500 hover:bg-blue-600"
-                        disabled={cartItems.length === 0}
-                    >
-                        ดำเนินการสั่งซื้อ
-                    </button>
-                </a>
             </div>
         </div>
     );
