@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { loadStripe } from '@stripe/stripe-js';
+import { redirect } from "next/dist/server/api-utils";
 
 const key = `${process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY}`;
 const stripePromise = loadStripe(key);
@@ -147,17 +148,15 @@ export default function Payment() {
   }, []);
 
   useEffect(() => {
-    if (Array.isArray(cartItems) && cartItems.length > 0) {
-      const subtotal = cartItems.reduce((total, item) => {
-        return total + (item.product.price * item.quantity);
-      }, 0);
-      setTotalPrice(subtotal);
-    } else {
-      // ถ้าไม่มีสินค้าก็ให้ redirect ไปหน้า cart หรือหน้าอื่น
-      window.location.href = "/cart";  // เปลี่ยน URL ตามที่ต้องการ
+    const subtotal = cartItems.reduce((total, item) => {
+      return total + (item.product.price * item.quantity);
+    }, 0);
+    if(subtotal == 0){
+        window.location.href = "/cart";
     }
+    console.log(subtotal);
+    setTotalPrice(subtotal);
   }, [cartItems]);
-  
 
   return (
     <div className="flex flex-col items-center py-8 px-4 bg-gray-100 min-h-screen">
