@@ -14,6 +14,10 @@ export async function GET(req, { params }) {
       where: {
         product_id: parseInt(id), // แปลง id ให้เป็น integer ถ้าจำเป็น
       },
+      include: {
+        category: true,
+        sub_category: true
+      },
     });
 
     if (!product) {
