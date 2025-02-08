@@ -109,9 +109,13 @@ export default function Payment() {
       if (!res.ok) {
         throw new Error("Failed to fetch cart data");
       }
-
+      
       const data = await res.json();
-      setCartItems(data);
+      if(data.message == "No items found in cart"){
+        window.location.href = "/cart";
+      }else{
+        setCartItems(data);
+      }
     } catch (error) {
       console.error("Error fetching cart items:", error);
       window.location.href = "/login";
@@ -151,9 +155,7 @@ export default function Payment() {
     const subtotal = cartItems.reduce((total, item) => {
       return total + (item.product.price * item.quantity);
     }, 0);
-    if(subtotal == 0){
-        window.location.href = "/cart";
-    }
+    
     console.log(subtotal);
     setTotalPrice(subtotal);
   }, [cartItems]);
