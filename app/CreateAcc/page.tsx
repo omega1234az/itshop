@@ -41,7 +41,13 @@ export default function CreateAcc() {
       Swal.fire("สำเร็จ!", "สมัครสมาชิกเรียบร้อย", "success");
       window.location.href = "/login";
     } catch (error) {
-      Swal.fire("เกิดข้อผิดพลาด", error.message, "error");
+      // ตรวจสอบว่า error เป็น instance ของ Error หรือไม่
+      if (error instanceof Error) {
+        Swal.fire("เกิดข้อผิดพลาด", error.message, "error");
+      } else {
+        // กรณีที่ error ไม่ใช่ instance ของ Error (หากเกิดข้อผิดพลาดอื่นๆ)
+        Swal.fire("เกิดข้อผิดพลาด", "ไม่ทราบข้อผิดพลาด", "error");
+      }
     }
   };
 
