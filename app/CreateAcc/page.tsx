@@ -1,6 +1,5 @@
 "use client";
 import { useState } from "react";
-
 import Swal from "sweetalert2";
 
 export default function CreateAcc() {
@@ -10,13 +9,14 @@ export default function CreateAcc() {
     password: "",
     confirmPassword: ""
   });
-  
 
-  const handleChange = (e) => {
+  // ระบุชนิดของ e ให้เป็น React.ChangeEvent<HTMLInputElement>
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
+  // ระบุชนิดของ e ให้เป็น React.FormEvent<HTMLFormElement>
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
       Swal.fire("Error", "รหัสผ่านไม่ตรงกัน", "error");
