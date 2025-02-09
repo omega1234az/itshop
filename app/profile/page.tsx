@@ -4,22 +4,14 @@ import Swal from 'sweetalert2';
 
 interface UserData {
   name: string;
-  
   phone: string;
   address: string;
   img?: string;
 }
 
-interface OrderData {
-  id: number;
-  productName: string;
-  date: string;
-}
-
 export default function ManageAcc() {
   const [userData, setUserData] = useState<UserData>({
     name: "",
-    
     phone: "",
     address: "",
   });
@@ -46,11 +38,10 @@ export default function ManageAcc() {
         const data: UserData = await response.json();
         setUserData({
           name: data.name,
-          
           phone: data.phone,
           address: data.address,
         });
-        
+
         if (data.img) {
           setPreview(data.img);
         }
@@ -81,12 +72,9 @@ export default function ManageAcc() {
     }
   };
 
-
-
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
-    // Show loading state
+
     Swal.fire({
       title: 'กำลังอัปเดตข้อมูล...',
       allowOutsideClick: false,
@@ -94,33 +82,32 @@ export default function ManageAcc() {
         Swal.showLoading();
       }
     });
-    
+
     try {
       const formData = new FormData();
-      
+
       Object.entries(userData).forEach(([key, value]) => {
         if (value) {
           formData.append(key, value);
         }
       });
-  
+
       if (file) {
         formData.append('file', file);
       }
-  
+
       const response = await fetch("/api/auth/me/edit", {
         method: "PUT",
         credentials: "include",
         body: formData,
       });
-  
+
       const data = await response.json();
-  
+
       if (!response.ok) {
         throw new Error(data.message || "เกิดข้อผิดพลาดในการอัปเดตข้อมูล");
       }
-  
-      // Show success message
+
       await Swal.fire({
         icon: 'success',
         title: 'สำเร็จ!',
@@ -129,12 +116,9 @@ export default function ManageAcc() {
         timer: 1500,
         timerProgressBar: true
       });
-  
-      // Reload page after success
+
       window.location.reload();
-  
     } catch (error) {
-      // Show error message
       Swal.fire({
         icon: 'error',
         title: 'เกิดข้อผิดพลาด!',
@@ -144,117 +128,81 @@ export default function ManageAcc() {
     }
   };
 
-  // Mock order data
-  const orders: OrderData[] = [
-    { id: 1, productName: "Example Product 1", date: "2025-01-16" },
-    { id: 2, productName: "Example Product 2", date: "2025-01-16" },
-    { id: 3, productName: "Example Product 3", date: "2025-01-16" },
-  ];
-
   if (isLoading) return <div>กำลังโหลดข้อมูล...</div>;
   if (error) return <div>{error}</div>;
 
   return (
-    <div className="flex flex-col">
-      <div className="flex-1 flex flex-row p-10">
-        <div className="container border-solid border-gray-700 border-r-4 flex flex-col items-start h-auto w-[500px]">
-          <h1 className="text-2xl font-bold mb-5">Quick</h1>
-          <ul className="list-disc pl-6 space-y-2">
-            <li className="text-xl text-gray-700">
-              <a href="" className="hover:text-blue-500">Item 1</a>
-            </li>
-            <li className="text-xl text-gray-700">
-              <a href="" className="hover:text-blue-500">Item 2</a>
-            </li>
-            <li className="text-xl text-gray-700">
-              <a href="" className="hover:text-blue-500">Item 3</a>
-            </li>
-            <li className="text-xl text-gray-700">
-              <a href="" className="hover:text-blue-500">Item 4</a>
-            </li>
-          </ul>
-        </div>
-        <div className="w-full max-w-4xl p-5">
-          <h2 className="text-2xl font-bold mb-5">Account Management</h2>
+    <div className="flex flex-col container mx-auto px-4">
+      <div className="flex flex-row p-8 justify-center">
+        <div className="w-full max-w-4xl bg-white shadow-md rounded-lg p-8">
+          <h2 className="text-2xl font-bold mb-5 text-center">จัดการโปรไฟล์</h2>
           <form onSubmit={handleSubmit}>
-            <div className="mb-6">
-              <label className="block mb-2">Profile Image</label>
-              <div className="flex items-center space-x-4">
-                {preview && (
-                  <img 
-                    src={preview} 
-                    alt="Profile preview" 
-                    className="w-24 h-24 rounded-full object-cover"
-                  />
-                )}
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                  className="border border-gray-300 rounded p-2"
+            {/* Profile Image */}
+            <div className="mb-6 flex items-center justify-center">
+              {preview && (
+                <img 
+                  src={preview} 
+                  alt="Profile preview" 
+                  className="w-32 h-32 rounded-full object-cover border-2 border-gray-300 mb-4"
                 />
-              </div>
+              )}
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="border border-gray-300 rounded p-2"
+              />
             </div>
 
-            <div className="grid grid-cols-2 gap-4 mb-8">
+            {/* Form Fields */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
               <div>
-                <label htmlFor="name" className="block mb-1">Name</label>
+                <label htmlFor="name" className="block mb-1 font-medium">ชื่อ</label>
                 <input
                   type="text"
                   id="name"
                   name="name"
                   value={userData.name}
                   onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded"
+                  className="w-full p-3 border border-gray-300 rounded-lg"
                 />
               </div>
-              
+
               <div>
-                <label htmlFor="phone" className="block mb-1">Phone</label>
+                <label htmlFor="phone" className="block mb-1 font-medium">เบอร์โทรศัพท์</label>
                 <input
                   type="text"
                   id="phone"
                   name="phone"
                   value={userData.phone}
                   onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded"
+                  className="w-full p-3 border border-gray-300 rounded-lg"
                 />
               </div>
+
               <div>
-                <label htmlFor="address" className="block mb-1">Address</label>
+                <label htmlFor="address" className="block mb-1 font-medium">ที่อยู่</label>
                 <input
                   type="text"
                   id="address"
                   name="address"
                   value={userData.address}
                   onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded"
+                  className="w-full p-3 border border-gray-300 rounded-lg"
                 />
               </div>
             </div>
-            <button 
-              type="submit" 
-              className="p-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-            >
-              บันทึกข้อมูล
-            </button>
-          </form>
 
-          <h3 className="text-xl font-bold mb-3 mt-8">Order History</h3>
-          <div className="space-y-3">
-            {orders.map((order) => (
-              <div key={order.id} className="flex justify-between items-center p-3 bg-blue-100 rounded">
-                <div>
-                  <p className="text-sm">Order ID: {order.id}</p>
-                  <p className="text-sm">Product Name: {order.productName}</p>
-                  <p className="text-sm">Date: {order.date}</p>
-                </div>
-                <button className="p-2 bg-blue-500 text-white rounded hover:bg-blue-600 border-solid border-2 border-[#0294BD5C]">
-                  View
-                </button>
-              </div>
-            ))}
-          </div>
+            {/* Submit Button */}
+            <div className="flex justify-center">
+              <button 
+                type="submit" 
+                className="px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition"
+              >
+                บันทึกข้อมูล
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </div>

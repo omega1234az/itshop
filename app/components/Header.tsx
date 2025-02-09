@@ -165,7 +165,15 @@ export default function Header() {
                         href="/profile"
                         className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
                       >
-                        Profile
+                        โปรไฟล์
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        href="/order"
+                        className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
+                      >
+                        คำสั่งซื้อของฉัน
                       </a>
                     </li>
                     <li>
