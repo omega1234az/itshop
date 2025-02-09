@@ -96,7 +96,9 @@ export default function Header() {
       {/* Desktop Header */}
       <div className="hidden lg:block">
         <div className="container mx-auto grid grid-cols-10 text-center items-center gap-5 relative py-4">
-          <a href="/" className="bg-red-400 p-5">Logo</a>
+          <a href="\" className="mt-2">
+          <img src="\banner\logo.png" alt="" />
+          </a>
           <a href="/contact" className="font-bold">ติดต่อ</a>
 
           <div className="col-span-5 relative">

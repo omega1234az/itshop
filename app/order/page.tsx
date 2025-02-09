@@ -36,7 +36,7 @@ interface OrderData {
   address: string;
   total_order_price: number;
   order_details: OrderDetail[];
-  payments: Payment[];  // เพิ่มฟิลด์นี้สำหรับ session_id จาก Stripe
+  payments: Payment[];
 }
 
 interface ApiResponse {
@@ -107,7 +107,6 @@ export default function ManageAcc() {
   };
 
   const handlePayment = async (sessionId: string | undefined) => {
-    // ตรวจสอบว่า sessionId มีค่าหรือไม่
     if (!sessionId) {
       Swal.fire("Error", "ไม่พบข้อมูลการชำระเงิน", "error");
       return;
@@ -155,62 +154,66 @@ export default function ManageAcc() {
           <div>{orderError}</div>
         ) : (
           <div className="space-y-4">
-            {filterOrdersByStatus(selectedTab).map((order) => (
-              <div key={order.order_id} className="p-4 bg-white rounded-lg shadow-md">
-                <div className="flex justify-between items-start mb-3">
-                  <div>
-                    <p className="text-sm font-medium">คำสั่งซื้อ #{order.order_id}</p>
-                    <p className="text-sm text-gray-600">{formatDate(order.order_date)}</p>
-                  </div>
-                  <div className={`px-3 py-1 rounded-full text-sm ${getStatusColor(order.status)}`}>
-                    {order.status === 'completed' ? "จัดส่งสำเร็จ" :
-                     order.status === 'processing' ? "กำลังจัดส่ง" :
-                     order.status === 'pending' ? "รอชำระเงิน" :
-                     "ยกเลิก"}
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  {order.order_details.map((detail) => (
-                    <div key={detail.order_detail_id} className="flex items-center justify-between bg-gray-50 p-2 rounded">
-                      <div className="flex items-center space-x-3">
-                        <img
-                          src={detail.product.img}
-                          alt={detail.product.name}
-                          className="w-12 h-12 object-cover rounded"
-                        />
-                        <div>
-                          <p className="font-medium">{detail.product.name}</p>
-                          <p className="text-sm text-gray-600">จำนวน: {detail.quantity}</p>
-                        </div>
-                      </div>
-                      <p className="font-medium">฿{detail.price.toLocaleString()}</p>
+            {filterOrdersByStatus(selectedTab).length === 0 ? (
+              <div className="text-center text-gray-500">ไม่พบคำสั่งซื้อในสถานะนี้</div>
+            ) : (
+              filterOrdersByStatus(selectedTab).map((order) => (
+                <div key={order.order_id} className="p-4 bg-white rounded-lg shadow-md">
+                  <div className="flex justify-between items-start mb-3">
+                    <div>
+                      <p className="text-sm font-medium">คำสั่งซื้อ #{order.order_id}</p>
+                      <p className="text-sm text-gray-600">{formatDate(order.order_date)}</p>
                     </div>
-                  ))}
-                </div>
-
-                <div className="mt-3 flex justify-between items-center pt-3 border-t">
-                  <div>
-                    <p className="text-sm text-gray-600">ที่อยู่จัดส่ง: {order.address}</p>
-                    <p className="text-sm font-medium">รวมทั้งสิ้น: ฿{order.total_price.toLocaleString()}</p>
+                    <div className={`px-3 py-1 rounded-full text-sm ${getStatusColor(order.status)}`}>
+                      {order.status === 'completed' ? "จัดส่งสำเร็จ" :
+                       order.status === 'processing' ? "กำลังจัดส่ง" :
+                       order.status === 'pending' ? "รอชำระเงิน" :
+                       "ยกเลิก"}
+                    </div>
                   </div>
-                  <div className={`px-3 py-1 rounded-full text-sm ${getStatusColor(order.payment_status)}`}>
-                    {order.payment_status === 'completed' ? 'ชำระเงินแล้ว' : 
-                     order.payment_status === 'pending' ? 'รอชำระเงิน' : 'การชำระเงินล้มเหลว'}
-                  </div>
-                </div>
 
-                {/* แสดงปุ่มชำระเงินเฉพาะคำสั่งซื้อที่สถานะ 'pending' */}
-                {order.payment_status === 'pending' && order.payments.length > 0 && (
-                  <button
-                    onClick={() => handlePayment(order.payments[0].session_id)}
-                    className="mt-4 bg-blue-600 text-white py-2 px-4 rounded-lg"
-                  >
-                    ชำระเงิน
-                  </button>
-                )}
-              </div>
-            ))}
+                  <div className="space-y-2">
+                    {order.order_details.map((detail) => (
+                      <div key={detail.order_detail_id} className="flex items-center justify-between bg-gray-50 p-2 rounded">
+                        <div className="flex items-center space-x-3">
+                          <img
+                            src={detail.product.img}
+                            alt={detail.product.name}
+                            className="w-12 h-12 object-cover rounded"
+                          />
+                          <div>
+                            <p className="font-medium">{detail.product.name}</p>
+                            <p className="text-sm text-gray-600">จำนวน: {detail.quantity}</p>
+                          </div>
+                        </div>
+                        <p className="font-medium">฿{detail.price.toLocaleString()}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="mt-3 flex justify-between items-center pt-3 border-t">
+                    <div>
+                      <p className="text-sm text-gray-600">ที่อยู่จัดส่ง: {order.address}</p>
+                      <p className="text-sm font-medium">รวมทั้งสิ้น: ฿{order.total_price.toLocaleString()}</p>
+                    </div>
+                    <div className={`px-3 py-1 rounded-full text-sm ${getStatusColor(order.payment_status)}`}>
+                      {order.payment_status === 'completed' ? 'ชำระเงินแล้ว' : 
+                       order.payment_status === 'pending' ? 'รอชำระเงิน' : 'การชำระเงินล้มเหลว'}
+                    </div>
+                  </div>
+
+                  {/* แสดงปุ่มชำระเงินเฉพาะคำสั่งซื้อที่สถานะ 'pending' */}
+                  {order.payment_status === 'pending' && order.payments.length > 0 && (
+                    <button
+                      onClick={() => handlePayment(order.payments[0].session_id)}
+                      className="mt-4 bg-blue-600 text-white py-2 px-4 rounded-lg"
+                    >
+                      ชำระเงิน
+                    </button>
+                  )}
+                </div>
+              ))
+            )}
           </div>
         )}
       </div>
