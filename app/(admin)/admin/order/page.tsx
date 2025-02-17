@@ -2,7 +2,15 @@
 import { useState } from "react";
 import Swal from "sweetalert2";
 
-// ข้อมูลตัวอย่างสินค้าในออเดอร์
+// Define the type for the order
+type Order = {
+  id: number;
+  orderNumber: string;
+  customer: string;
+  status: string;
+  total: number;
+};
+
 const mockOrderDetails = [
   { productName: "สินค้าตัวอย่าง 1", quantity: 2, price: 500 },
   { productName: "สินค้าตัวอย่าง 2", quantity: 1, price: 700 },
@@ -10,17 +18,17 @@ const mockOrderDetails = [
 ];
 
 export default function Orders() {
-  const [orders, setOrders] = useState([
+  const [orders, setOrders] = useState<Order[]>([
     { id: 1, orderNumber: "ORD12345", customer: "John Doe", status: "รอชำระเงิน", total: 1200 },
     { id: 2, orderNumber: "ORD12346", customer: "Jane Smith", status: "กำลังจัดส่ง", total: 2500 },
     { id: 3, orderNumber: "ORD12347", customer: "Michael Lee", status: "จัดส่งสำเร็จ", total: 1800 },
     { id: 4, orderNumber: "ORD12348", customer: "Emily Davis", status: "ยกเลิก", total: 2200 },
   ]);
 
-  const [filteredOrders, setFilteredOrders] = useState(orders); // สำหรับเก็บรายการออเดอร์ที่กรองแล้ว
+  const [filteredOrders, setFilteredOrders] = useState<Order[]>(orders);
 
   // ฟังก์ชั่นสำหรับการแสดง popup แก้ไขสถานะ
-  const handleEditOrder = async (order) => {
+  const handleEditOrder = async (order: Order) => {  // Add type here
     const productsHtml = mockOrderDetails.map((item) => `
       <div class="flex justify-between mb-2">
         <span><strong>${item.productName}</strong></span>
@@ -73,7 +81,7 @@ export default function Orders() {
   };
 
   // ฟังก์ชั่นสำหรับกรองออเดอร์ตามสถานะ
-  const filterOrders = (status) => {
+  const filterOrders = (status: string) => { // Specify the type of `status` parameter
     if (status === "All") {
       setFilteredOrders(orders); // ถ้ากรองเป็นทั้งหมด
     } else {
