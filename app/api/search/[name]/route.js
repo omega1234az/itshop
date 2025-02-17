@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 
 export async function GET(request, { params }) {
   try {
-    const name = await params.name;  // Next.js 14+ ไม่จำเป็นต้อง await params แล้ว
+    const name = await params.name;  
     console.log(name);
     if (!name) {
       return NextResponse.json({

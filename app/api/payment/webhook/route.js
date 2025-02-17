@@ -90,9 +90,7 @@ async function handleCheckoutSessionCompleted(session) {
                 }
             }); 
             
-            await tx.cart.deleteMany({
-                where: { user_id: payment.user.user_id }
-            });
+            
 
             // Decrement stock for the products in the order
             const orderDetails = await tx.order_details.findMany({

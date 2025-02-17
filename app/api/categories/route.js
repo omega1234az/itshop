@@ -2,12 +2,12 @@ import { PrismaClient } from '@prisma/client';
 import { NextResponse } from 'next/server';
 const prisma = new PrismaClient();
 
-// ดึงรายการหมวดหมู่ทั้งหมด (GET)
+// ดึงรายการหมวดหมู่ทั้งหมด
 export async function GET() {
   try {
     const categories = await prisma.categories.findMany({
       include: {
-        sub_categories: true, // รวมข้อมูล subcategories ด้วย
+        sub_categories: true, 
       },
     });
 

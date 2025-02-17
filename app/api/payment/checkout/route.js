@@ -130,7 +130,7 @@ export async function POST(req) {
                     payments: {
                         create: {
                             user_id: user.user_id,
-                            payment_method: 'card',
+                            payment_method: 'stripe',
                             payment_status: 'pending',
                             transaction_id,
                             session_id: session.id,
@@ -143,7 +143,10 @@ export async function POST(req) {
                     payments: true,
                 },
             });
-
+            await tx.cart.deleteMany({
+                where: { user_id: user.user_id } // ใช้ user.user_id ที่รับเข้ามาจาก request
+            });
+            
             
             
 
