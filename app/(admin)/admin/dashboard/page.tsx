@@ -1,64 +1,119 @@
-export default function OTPemail(){
-    return(
-    <div className="flex flex-col">
+"use client";
+import { useState } from "react";
+import { Line, Bar, Pie, Doughnut } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  PointElement,
+  LineElement,
+  ArcElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
 
-        <div className="flex-1 flex justify-center items-center mt-20">
-          <div className="w-[500px] h-auto p-5 border border-gray-300 rounded shadow-md bg-gray-300">
-            <h2 className="text-center mb-5 text-4xl font-bold">Enter OTP</h2>
-            <form>
-                <div className="flex justify-center space-x-4 mt-10 mb-10">
-                    <input
-                        type="text"
-                        maxLength={1}
-                        className="w-16 h-16 text-center border-2 border-gray-300 rounded-lg text-3xl font-semibold focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-gray-400 transition duration-200 ease-in-out bg-gray-600 text-white"
-                        id="otp5"
-                        autoComplete="off"
-                    />
-                    <input
-                        type="text"
-                        maxLength={1}
-                        className="w-16 h-16 text-center border-2 border-gray-300 rounded-lg text-3xl font-semibold focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-gray-400 transition duration-200 ease-in-out bg-gray-600 text-white"
-                        id="otp5"
-                        autoComplete="off"
-                    />
-                    <input
-                        type="text"
-                        maxLength={1}
-                        className="w-16 h-16 text-center border-2 border-gray-300 rounded-lg text-3xl font-semibold focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-gray-400 transition duration-200 ease-in-out bg-gray-600 text-white"
-                        id="otp5"
-                        autoComplete="off"
-                    />
-                    <input
-                        type="text"
-                        maxLength={1}
-                        className="w-16 h-16 text-center border-2 border-gray-300 rounded-lg text-3xl font-semibold focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-gray-400 transition duration-200 ease-in-out bg-gray-600 text-white"
-                        id="otp5"
-                        autoComplete="off"
-                    />
-                    <input
-                        type="text"
-                        maxLength={1}
-                        className="w-16 h-16 text-center border-2 border-gray-300 rounded-lg text-3xl font-semibold focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-gray-400 transition duration-200 ease-in-out bg-gray-600 text-white"
-                        id="otp5"
-                        autoComplete="off"
-                    />
-                    <input
-                        type="text"
-                        maxLength={1}
-                        className="w-16 h-16 text-center border-2 border-gray-300 rounded-lg text-3xl font-semibold focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-gray-400 transition duration-200 ease-in-out bg-gray-600 text-white"
-                        id="otp5"
-                        autoComplete="off"
-                    />
-                </div>
-              <button
-                type="submit"
-                className="w-60 p-2 bg-[#92E3F1] text-black rounded-lg hover:bg-[#0294BDD9] text-3xl font-bold ml-[108px] border-solid border-2 border-[#0294BD5C]"
-              >
-                <a href="/ChangePassword">Confirm</a>
-              </button>
-            </form>
-          </div>
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  PointElement,
+  LineElement,
+  ArcElement,
+  Title,
+  Tooltip,
+  Legend
+);
+
+export default function AdminDashboard() {
+  const [totalRevenue, setTotalRevenue] = useState<number>(35000);
+  const [totalOrders, setTotalOrders] = useState<number>(150);
+  const [totalUsers, setTotalUsers] = useState<number>(120);
+  const [pendingOrders, setPendingOrders] = useState<number>(20);
+  const [avgOrderValue, setAvgOrderValue] = useState<number>(totalRevenue / totalOrders);
+
+  // กราฟแนวโน้มยอดขายรายวัน (ใหม่)
+  const dailySalesData = {
+    labels: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
+    datasets: [
+      {
+        label: "ยอดขายรายวัน",
+        data: [100, 200, 400, 300, 500, 700, 600, 800, 900, 1000],
+        borderColor: "blue",
+        backgroundColor: "rgba(0, 0, 255, 0.2)",
+        tension: 0.3,
+      },
+    ],
+  };
+
+  // กราฟยอดขายตามหมวดหมู่สินค้า (เก่า)
+  const salesByCategoryData = {
+    labels: ["CPU", "Mainboard", "Ram", "SSD"],
+    datasets: [
+      {
+        label: "ยอดขาย",
+        data: [5000, 12000, 8000, 4000],
+        backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56", "#4CAF50"],
+      },
+    ],
+  };
+
+  // กราฟพฤติกรรมลูกค้า (ใหม่)
+
+
+  return (
+    <div className="flex">
+      {/* Sidebar เมนู */}
+      
+      {/* Main Content */}
+      <div className="flex-1 p-4">
+        <h1 className="text-xl font-bold mb-3">Dashboard Admin</h1>
+
+        {/* แสดงสถิติสำคัญ */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4">
+          <Card title="ยอดขายรวม" value={`฿${totalRevenue}`} icon="💰" />
+          <Card title="จำนวนคำสั่งซื้อ" value={totalOrders} icon="📦" />
+          <Card title="ลูกค้าทั้งหมด" value={totalUsers} icon="👥" />
+          <Card title="คำสั่งซื้อรอดำเนินการ" value={pendingOrders} icon="⏳" />
         </div>
+
+        {/* แสดงกราฟทั้งหมด */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* กราฟแนวโน้มยอดขายรายวัน */}
+          <div className="bg-white p-4 shadow rounded-lg">
+            <h2 className="text-sm font-semibold mb-2">แนวโน้มยอดขายรายวัน</h2>
+            <Line data={dailySalesData} options={{ responsive: true }} />
+          </div>
+
+          {/* กราฟยอดขายตามหมวดหมู่สินค้า */}
+          <div className="bg-white p-4 shadow rounded-lg">
+            <h2 className="text-sm font-semibold mb-2">ยอดขายแยกตามหมวดหมู่</h2>
+            <Bar data={salesByCategoryData} options={{ responsive: true }} />
+          </div>
+
+          
+        </div>
+      </div>
     </div>
-    )
+  );
+}
+
+// Component สำหรับแสดงข้อมูลสถิติ
+type CardProps = {
+  title: string;
+  value: number | string;
+  icon: string;
+};
+
+function Card({ title, value, icon }: CardProps) {
+  return (
+    <div className="bg-white p-2 shadow rounded-lg flex items-center">
+      <span className="text-lg mr-2">{icon}</span>
+      <div>
+        <h3 className="text-sm font-semibold">{title}</h3>
+        <p className="text-lg font-bold">{value}</p>
+      </div>
+    </div>
+  );
 }
