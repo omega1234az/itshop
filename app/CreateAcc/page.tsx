@@ -1,6 +1,8 @@
 "use client";
 import { useState } from "react";
 import Swal from "sweetalert2";
+// @ts-ignore
+import ReCAPTCHA from "react-google-recaptcha";  // นำเข้า ReCAPTCHA
 
 export default function CreateAcc() {
   const [formData, setFormData] = useState({
@@ -9,19 +11,33 @@ export default function CreateAcc() {
     password: "",
     confirmPassword: ""
   });
+  const key = `${process.env.NEXT_PUBLIC_SITE_RECAPCHA}`;
+  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
 
   // ระบุชนิดของ e ให้เป็น React.ChangeEvent<HTMLInputElement>
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // ฟังก์ชันที่ใช้สำหรับ reCAPTCHA
+  const handleRecaptcha = (token: string | null) => {
+    setRecaptchaToken(token);
+  };
+
   // ระบุชนิดของ e ให้เป็น React.FormEvent<HTMLFormElement>
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     if (formData.password !== formData.confirmPassword) {
       Swal.fire("Error", "รหัสผ่านไม่ตรงกัน", "error");
       return;
     }
+
+    if (!recaptchaToken) {
+      Swal.fire("Error", "โปรดยืนยัน reCAPTCHA", "error");
+      return;
+    }
+
     try {
       const response = await fetch("/api/auth/signup", {
         method: "POST",
@@ -31,21 +47,22 @@ export default function CreateAcc() {
         body: JSON.stringify({
           name: formData.name,
           email: formData.email,
-          password: formData.password
+          password: formData.password,
+          recaptchaToken: recaptchaToken,  // ส่ง token ไปกับ request
         })
       });
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || "ไม่สามารถสมัครสมาชิกได้");
       }
+
       Swal.fire("สำเร็จ!", "สมัครสมาชิกเรียบร้อย", "success");
       window.location.href = "/login";
     } catch (error) {
-      // ตรวจสอบว่า error เป็น instance ของ Error หรือไม่
       if (error instanceof Error) {
         Swal.fire("เกิดข้อผิดพลาด", error.message, "error");
       } else {
-        // กรณีที่ error ไม่ใช่ instance ของ Error (หากเกิดข้อผิดพลาดอื่นๆ)
         Swal.fire("เกิดข้อผิดพลาด", "ไม่ทราบข้อผิดพลาด", "error");
       }
     }
@@ -105,6 +122,15 @@ export default function CreateAcc() {
                 required
               />
             </div>
+            
+            {/* reCAPTCHA Component */}
+            <div className="mb-6">
+              <ReCAPTCHA
+                sitekey={key}  // เปลี่ยนเป็น Site Key ของคุณ
+                onChange={handleRecaptcha}
+              />
+            </div>
+
             <button
               type="submit"
               className="w-[250px] p-2 text-black rounded-lg bg-teal-400 hover:bg-teal-500 text-3xl font-bold ml-[108px]"
