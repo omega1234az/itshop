@@ -29,7 +29,7 @@ export async function middleware(request) {
 
     console.log('✅ ตรวจสอบ Token สำเร็จ:', payload);
 
-    // 🔹 ตรวจสอบว่า path ที่เข้าไปเป็น API ของ admin หรือไม่
+    
     if (request.url.includes('/api/admin') && payload.role !== 'admin') {
       return NextResponse.json({ message: 'คุณไม่มีสิทธิ์เข้าถึง API ของ admin' }, { status: 403 });
     }
