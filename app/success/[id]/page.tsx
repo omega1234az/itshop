@@ -23,12 +23,12 @@ export default function Success() {
             การชำระเงินของคุณได้รับการยืนยันแล้ว ขอบคุณที่ใช้บริการ!
           </p>
           <div className="mt-8">
-            <button
-            
+            <a
+             href="/"
               className="px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg shadow-md transition ease-in-out duration-300 transform hover:scale-105"
             >
               กลับไปที่หน้าแรก
-            </button>
+            </a>
           </div>
         </div>
       </div>

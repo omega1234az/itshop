@@ -8,6 +8,7 @@ interface User {
   name: string;
   email: string;
   img?: string;
+  role?: string;
 }
 
 interface Product {
@@ -162,6 +163,16 @@ export default function Header() {
               {dropdownOpen && (
                 <div className="absolute right-0 mt-2 bg-white border rounded-lg shadow-lg w-48 z-10">
                   <ul>
+                    {user.role === 'admin' && (
+                      <li>
+                        <a
+                          href="/admin/dashboard"
+                          className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
+                        >
+                          Admin Dashboard
+                        </a>
+                      </li>
+                    )}
                     <li>
                       <a
                         href="/profile"
@@ -291,6 +302,16 @@ export default function Header() {
           {dropdownOpen && user && (
             <div className="mt-3 bg-white border rounded-lg shadow-lg">
               <ul>
+                {user.role === 'admin' && (
+                  <li>
+                    <a
+                      href="/admin/dashboard"
+                      className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
+                    >
+                      Admin Dashboard
+                    </a>
+                  </li>
+                )}
                 <li>
                   <a
                     href="/profile"
