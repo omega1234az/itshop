@@ -49,7 +49,10 @@ export default function adminviewproduct(){
     return (
         <>
         <div className="flex flex-col">
-            <div className="container p-10">
+            <div className="container p-5">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-10">
+                <Card title="จัดการสินค้า" icon="📦"  />
+                </div>
                 <div className="flex-1 flex row mb-10">
                     <label className="text-2xl mr-2 font-bold">Sort By :</label>
                     <select
@@ -72,6 +75,9 @@ export default function adminviewproduct(){
                             <option value="GPU">GPU</option>
                             <option value="RAM">RAM</option>
                         </select>
+                    <button className="w-max p-2 bg-[#92E3F1] text-black rounded-md hover:bg-[#0294BDD9] font-bold text-2xl ml-20">
+                    <a href="/admin/addproduct">เพิ่มสินค้า</a>
+                    </button>
                 </div>
                 <div className="flex flex-1 flex-row justify-between mb-10">
                     <div>
@@ -148,3 +154,19 @@ export default function adminviewproduct(){
         </>
     );
 }
+
+function Card({ title,icon }: CardProps) {
+    return (
+      <div className="bg-white p-2 shadow rounded-lg flex items-center">
+        <span className="text-lg mr-2">{icon}</span>
+        <div>
+          <h3 className="text-2xl font-semibold">{title}</h3>
+        </div>
+      </div>
+    );
+  }
+
+  type CardProps = {
+    title: string;
+    icon: string;
+  };
