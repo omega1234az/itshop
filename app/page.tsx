@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import Item from "./components/item";
 import Category from "./components/category";
+import Footer from "./components/Footer"
 
 interface CategoryType {
   category_id: number;
@@ -151,6 +152,8 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      <Footer />
     </>
   );
 }
