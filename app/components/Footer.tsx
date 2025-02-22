@@ -6,7 +6,7 @@ export default function Footer() {
     {/* Logo & Description */}
     <div>
       <img src="../logo.jpg" alt="Logo" className="h-12 mb-3" />
-      <p className="text-sm">YourCompany - Providing the best solutions for your needs.</p>
+      <p className="text-sm">IT SHOP - มอบประสบการณ์การซื้อขายที่ดีที่สุดให้กับคุณ</p>
     </div>
 
     {/* Navigation Links */}
@@ -20,9 +20,9 @@ export default function Footer() {
 
     {/* Contact & Social Media */}
     <div>
-      <h2 className="text-lg font-semibold text-white">Connect With Us</h2>
-      <p>Email: support@yourcompany.com</p>
-      <p>Phone: +123 456 7890</p>
+      <h2 className="text-lg font-semibold text-white">ติดต่อพวกเรา</h2>
+      <p>Email: ITSHOP@gmail.com</p>
+      <p>Phone: 0647813269</p>
       <div className="flex space-x-3 mt-3">
         <a href="#"><img src="../facebook.jpg" alt="Facebook" className="h-6" /></a>
         <a href="#"><img src="../ig.jpg" alt="Instagram" className="h-6" /></a>
@@ -33,7 +33,7 @@ export default function Footer() {
 
   {/* Copyright */}
   <div className="text-center text-sm border-t border-gray-700 mt-5 pt-3">
-    © 2025 YourCompany. All rights reserved.
+    © 2025 ITSHOP สงวนลิขสิทธิ์.
   </div>
 </footer>
 
