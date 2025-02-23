@@ -30,7 +30,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
             </a>
           </li>
           <li>
-            <a href="#" className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-700 transition">
+            <a href="salesreport" className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-700 transition">
               📊 รายงานยอดขาย
             </a>
           </li>
