@@ -141,7 +141,7 @@ export default function AdminAddProduct() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
+    <div className="h-fit min-h-fit bg-gray-50 p-4">
       <div className="max-w-full mx-auto">
         {/* Header */}
         <div className="mb-4">

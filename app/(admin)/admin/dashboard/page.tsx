@@ -30,7 +30,7 @@ interface ChartData {
   total_orders_this_month: number;
   new_users_this_month: number;
   pending_orders: number;
-  salesLast5Days: { date: string; total_sales: number }[];
+  monthly_sales: { date: string; total_sales: number }[];
   salesByCategory: { category_id: number; category_name: string; total_sales: number }[];
 }
 
@@ -61,11 +61,11 @@ export default function AdminDashboard() {
 
   // กราฟแนวโน้มยอดขายรายวัน
   const dailySalesData = {
-    labels: chartData.salesLast5Days.map((day) => day.date),
+    labels: chartData.monthly_sales.map((day) => day.date),
     datasets: [
       {
         label: "ยอดขายรายวัน",
-        data: chartData.salesLast5Days.map((day) => day.total_sales),
+        data: chartData.monthly_sales.map((day) => day.total_sales),
         borderColor: "blue",
         backgroundColor: "rgba(0, 0, 255, 0.2)",
         tension: 0.3,
@@ -101,7 +101,7 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* กราฟแนวโน้มยอดขายรายวัน */}
         <div className="bg-white p-4 shadow rounded-lg">
-          <h2 className="text-sm font-semibold mb-2">แนวโน้มยอดขายรายวัน</h2>
+          <h2 className="text-sm font-semibold mb-2">แนวโน้มยอดขายเดือนนี้</h2>
           <Line data={dailySalesData} options={{ responsive: true }} />
         </div>
 
