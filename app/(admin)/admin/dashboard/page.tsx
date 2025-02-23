@@ -91,7 +91,7 @@ export default function AdminDashboard() {
 
       {/* แสดงสถิติสำคัญ */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <Card title="ยอดขายเดือนนี้" value={`฿${chartData.total_sales_this_month}`} icon="💰" />
+        <Card title="ยอดขายเดือนนี้" value={`฿${chartData.total_sales_this_month.toLocaleString()}`} icon="💰" />
         <Card title="จำนวนคำสั่งซื้อ" value={chartData.total_orders_this_month} icon="📦" />
         <Card title="ลูกค้าใหม่" value={chartData.new_users_this_month} icon="👥" />
         <Card title="คำสั่งซื้อรอดำเนินการ" value={chartData.pending_orders} icon="⏳" />

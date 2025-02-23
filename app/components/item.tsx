@@ -5,9 +5,15 @@ interface ItemProps {
     name: string;
     price: number;
     img: string;
+    status: number;
 }
 
-export default function Item({ id, name, price, img }: ItemProps) {
+export default function Item({ id, name, price, img, status }: ItemProps) {
+    // เช็คว่า status เท่ากับ 0 หรือไม่ ถ้าใช่ให้ return null ไม่แสดงสินค้า
+    if (status === 0) {
+        return null;
+    }
+
     return (
         <div className="w-full text-center">
             <Link href={`/productdetail/${id}`}>

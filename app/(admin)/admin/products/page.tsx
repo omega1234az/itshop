@@ -1,172 +1,334 @@
 "use client";
+import Swal from "sweetalert2";
+import { useState, useEffect } from "react";
+import Select from "react-select"; // Import react-select
 
-import { useState } from "react";
+type Product = {
+  product_id: number;
+  name: string;
+  description: string;
+  price: number;
+  stock: number;
+  img: string;
+  status: number;
+  category: {
+    category_id: number;
+    name: string;
+    description: string;
+  };
+  sub_category: {
+    sub_category_id: number;
+    name: string;
+    description: string;
+  };
+};
 
-const data = [
-    { id: 1, name: "Banana", category: "Fruit", price: 30 },
-    { id: 2, name: "Apple", category: "Fruit", price: 20 },
-    { id: 3, name: "Cherry", category: "Fruit", price: 25 },
-  ];
-  
+export default function AdminViewProduct() {
+  const [items, setItems] = useState<Product[]>([]);
+  const [filteredItems, setFilteredItems] = useState<Product[]>([]); // New state for filtered items
+  const [category, setCategory] = useState(""); // For category filter
+  const [statusFilter, setStatusFilter] = useState(""); // For status filter
 
-export default function adminviewproduct(){
-  const [items, setItems] = useState(data);
-  const [sortBy, setSortBy] = useState("name");
-  const [subCategory, setSubCategory] = useState("");
-  const [isOpen, setIsOpen] = useState(false); // state สำหรับเปิด-ปิด popup
-  const [product, setProduct] = useState({
-    name: "CPU",
-    stock: 10,
-    status: "active",
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(8); // Set the number of items per page
+
+  const [isOpen, setIsOpen] = useState(false);
+  const [product, setProduct] = useState<Product>({
+    product_id: 0,
+    name: "",
+    description: "",
+    price: 0,
+    stock: 0,
+    img: "",
+    status: 1,
+    category: { category_id: 0, name: "", description: "" },
+    sub_category: { sub_category_id: 0, name: "", description: "" },
   });
 
-    // ฟังก์ชันเปิดปิด Popup
-    const togglePopup = () => setIsOpen(!isOpen);
-
-    // ฟังก์ชันอัปเดตค่าเมื่อแก้ไข
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      setProduct({ ...product, [e.target.name]: e.target.value });
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch("/api/product");
+        const data = await response.json();
+        setItems(data);
+        setFilteredItems(data); // Set the fetched data to filteredItems initially
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
     };
 
+    fetchData();
+  }, []);
 
-  const handleSort = (sortType: string) => {
-    let sortedData = [...items];
+  // Handle category filter change
+  const handleCategoryChange = (selectedOption: any) => {
+    setCategory(selectedOption?.value || ""); // "all" will set it to ""
+  };
 
-    if (sortType === "name") {
-      sortedData.sort((a, b) => a.name.localeCompare(b.name));
-    } else if (sortType === "category") {
-      sortedData.sort((a, b) => a.category.localeCompare(b.category));
-    } else if (sortType === "price_asc") {
-      sortedData.sort((a, b) => a.price - b.price);
-    } else if (sortType === "price_desc") {
-      sortedData.sort((a, b) => b.price - a.price);
+  // Handle status filter change
+  const handleStatusChange = (selectedOption: any) => {
+    setStatusFilter(selectedOption?.value || "");
+  };
+
+  // Filter products based on selected filters
+  useEffect(() => {
+    let filtered = items;
+
+    if (category && category !== "all") {
+      filtered = filtered.filter(item => item.category.name === category);
     }
 
-    setItems(sortedData);
-    setSortBy(sortType);
-  };
+    if (statusFilter) {
+      const status = statusFilter === "active" ? 1 : 0;
+      filtered = filtered.filter(item => item.status === status);
+    }
+
+    setFilteredItems(filtered); // Apply filters to the list
+  }, [category, statusFilter, items]);
+
+  // Calculate the products to display for the current page
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredItems.slice(indexOfFirstItem, indexOfLastItem);
+
+  // Handle page change
+  const handlePageChange = (pageNumber: number) => setCurrentPage(pageNumber);
+
+  const togglePopup = () => setIsOpen(!isOpen);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const value = e.target.name === "stock" || e.target.name === "price" 
+      ? Number(e.target.value)
+      : e.target.value;
     
-    return (
-        <>
-        <div className="flex flex-col">
-            <div className="container p-5">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-10">
-                <Card title="จัดการสินค้า" icon="📦"  />
-                </div>
-                <div className="flex-1 flex row mb-10">
-                    <label className="text-2xl mr-2 font-bold">Sort By :</label>
-                    <select
-                        value={sortBy}
-                        onChange={(e) => handleSort(e.target.value)}
-                        className="border border-gray-400 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-62 mr-10">
-                        <option value="name">Sort by Name (A-Z)</option>
-                        <option value="category">Sort by Category</option>
-                        <option value="price_asc">Sort by Price (Low to High)</option>
-                        <option value="price_desc">Sort by Price (High to Low)</option>
-                    </select>
+    setProduct({ ...product, [e.target.name]: value });
+  };
 
-                    {/* Sort by Sub Category Dropdown */}
-                    <label className="mr-2 text-2xl font-bold"> Sub Catagory :</label>
-                        <select
-                            value={subCategory}
-                            onChange={(e) => setSubCategory(e.target.value)}
-                            className="border border-gray-400 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-62">
-                            <option value="CPU">CPU</option>
-                            <option value="GPU">GPU</option>
-                            <option value="RAM">RAM</option>
-                        </select>
-                    <button className="w-max p-2 bg-[#92E3F1] text-black rounded-md hover:bg-[#0294BDD9] font-bold text-2xl ml-20">
-                    <a href="/admin/addproduct">เพิ่มสินค้า</a>
-                    </button>
-                </div>
-                <div className="flex flex-1 flex-row justify-between mb-10">
-                    <div>
-                        <div className="border p-5 rounded-lg shadow-lg">
-                            <div>
-                                <img src="/cpu1.jpg" alt="CPU" width={200} height={200} className="shadow-xl mb-5" />
-                            </div>
-                            <div className="">
-                                <div className="flex flex-1 flex-col">
-                                <label>Name: {product.name}</label>
-                                <label>Stock: {product.stock}</label>
-                                <div className="flex items-center">
-                                    <div>Status:</div>
-                                    <div className={`w-5 h-5 rounded-full ml-2 ${product.status === "active" ? "bg-teal-400" : "bg-red-400"}`}></div>
-                                </div>
-                                </div>
-                                <div className="flex flex-1 flex-col justify-end ml-20 items-end">
-                                <button onClick={togglePopup} className="w-max p-1 bg-[#92E3F1] text-black rounded-lg hover:bg-[#0294BDD9] font-bold">
-                                    แก้ไข
-                                </button>
-                                </div>
-                            </div>
-                        </div>
-                        {isOpen && (
-                        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                        <div className="bg-white p-5 rounded-lg shadow-lg w-80">
-                            <h2 className="text-xl font-bold mb-3">แก้ไขข้อมูลสินค้า</h2>
-                            
-                            <label className="block">Name:</label>
-                            <input
-                            type="text"
-                            name="name"
-                            value={product.name}
-                            onChange={handleChange}
-                            className="w-full border p-2 rounded mb-2"
-                            />
+  const handleSubmit = async () => {
+    try {
+      const updatedData: Partial<Product> = {};
+      if (product.name !== "") updatedData.name = product.name;
+      if (product.description !== "") updatedData.description = product.description;
+      if (product.price !== 0) updatedData.price = Number(product.price);
+      if (product.stock !== 0) updatedData.stock = Number(product.stock);
+      if (product.img !== "") updatedData.img = product.img;
+      if (product.status !== undefined) updatedData.status = product.status;
 
-                            <label className="block">Stock:</label>
-                            <input
-                            type="number"
-                            name="stock"
-                            value={product.stock}
-                            onChange={handleChange}
-                            className="w-full border p-2 rounded mb-2"
-                            />
+      const response = await fetch(`/api/admin/product/${product.product_id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedData),
+        credentials: "include",
+      });
 
-                            <label className="block">Status:</label>
-                            <select
-                            name="status"
-                            value={product.status}
-                            onChange={(e) => setProduct({ ...product, status: e.target.value })}
-                            className="w-full border p-2 rounded mb-3"
-                            >
-                            <option value="active">Active</option>
-                            <option value="inactive">Inactive</option>
-                            </select>
+      if (response.ok) {
+        const updatedProduct = await response.json();
+        setItems((prevItems) =>
+          prevItems.map((item) =>
+            item.product_id === updatedProduct.product_id ? updatedProduct : item
+          )
+        );
+        togglePopup();
+        
+        Swal.fire({
+          icon: 'success',
+          title: 'อัปเดตสินค้าแล้ว!',
+          text: 'สินค้าได้รับการอัปเดตสำเร็จ',
+          confirmButtonColor: '#4BB543',
+        });
+      } else {
+        console.error("Failed to update product.");
+        
+        Swal.fire({
+          icon: 'error',
+          title: 'อุ๊ปส์...',
+          text: 'เกิดข้อผิดพลาดในการอัปเดตสินค้า',
+          confirmButtonColor: '#FF0000',
+        });
+      }
+    } catch (error) {
+      console.error("Error updating product:", error);
 
-                            <div className="flex justify-end space-x-2">
-                            <button onClick={togglePopup} className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">
-                                ยกเลิก
-                            </button>
-                            <button onClick={togglePopup} className="px-4 py-2 bg-[#92E3F1] text-black rounded-lg hover:bg-[#0294BDD9]">
-                                บันทึก
-                            </button>
-                            </div>
-                        </div>
-                        </div>
-                         )}
-                    </div>
-                    
-                </div>
-            </div>
-        </div>
-        </>
-    );
-}
+      Swal.fire({
+        icon: 'error',
+        title: 'อุ๊ปส์...',
+        text: 'เกิดข้อผิดพลาดที่ไม่คาดคิด',
+        confirmButtonColor: '#FF0000',
+      });
+    }
+  };
 
-function Card({ title,icon }: CardProps) {
-    return (
-      <div className="bg-white p-2 shadow rounded-lg flex items-center">
-        <span className="text-lg mr-2">{icon}</span>
-        <div>
-          <h3 className="text-2xl font-semibold">{title}</h3>
-        </div>
-      </div>
-    );
+  // Options for filtering
+  const categoryOptions = [
+    { value: "all", label: "All" }, // Added "All" option
+    { value: "CPU", label: "CPU" },
+    { value: "RAM", label: "RAM" },
+    { value: "VGA", label: "VGA" },
+    { value: "MAINBOARD", label: "MAINBOARD" },
+    { value: "SSD", label: "SSD" },
+    { value: "Laptop", label: "Laptop" },
+    { value: "Monitor", label: "Monitor" },
+  ];
+
+  const statusOptions = [
+    { value: "active", label: "Active" },
+    { value: "inactive", label: "Inactive" },
+  ];
+
+  // Pagination logic
+  const pageNumbers = [];
+  for (let i = 1; i <= Math.ceil(filteredItems.length / itemsPerPage); i++) {
+    pageNumbers.push(i);
   }
 
-  type CardProps = {
-    title: string;
-    icon: string;
-  };
+  return (
+    <>
+      <div className="flex flex-col">
+        <div className="container p-5">
+          {/* Filters */}
+          <div className="flex space-x-4 mb-5">
+            <Select
+              options={categoryOptions}
+              value={categoryOptions.find(option => option.value === category)}
+              onChange={handleCategoryChange}
+              placeholder="Select Category"
+            />
+            <Select
+              options={statusOptions}
+              value={statusOptions.find(option => option.value === statusFilter)}
+              onChange={handleStatusChange}
+              placeholder="Select Status"
+            />
+          </div>
+
+          {/* Product grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-10">
+  {currentItems.map((item) => (
+    <div
+      key={item.product_id}
+      className="border p-4 rounded-lg shadow-lg flex flex-col items-center justify-between" // ปรับขนาดให้เล็กลง
+    >
+      <div>
+        <img
+          src={item.img}
+          alt={item.name}
+          width={130} // ปรับขนาดของภาพให้เล็กลง
+          height={130} // ปรับขนาดของภาพให้เล็กลง
+          className="shadow-xl mb-4" // ลดระยะห่าง
+        />
+      </div>
+      <div className="flex flex-col items-center">
+        <label className="text-sm font-semibold">{item.name}</label> {/* ลดขนาดของชื่อ */}
+        <label className="text-xs text-gray-500">Stock: {item.stock}</label> {/* ลดขนาดของ text */}
+        <div className="flex items-center">
+          <div>Status:</div>
+          <div
+            className={`w-5 h-5 rounded-full ml-2 ${item.status === 1 ? "bg-teal-400" : "bg-red-400"}`}
+          ></div>
+        </div>
+      </div>
+      <div className="flex justify-center mt-3">
+        <button
+          onClick={() => {
+            setProduct(item);
+            togglePopup();
+          }}
+          className="w-max px-3 py-1 bg-[#92E3F1] text-black rounded-lg hover:bg-[#0294BDD9] font-bold text-xs"
+        >
+          แก้ไข
+        </button>
+      </div>
+    </div>
+  ))}
+</div>
+
+
+          {/* Pagination */}
+          <div className="flex justify-center space-x-2 mt-5">
+            {pageNumbers.map(number => (
+              <button
+                key={number}
+                onClick={() => handlePageChange(number)}
+                className={`px-4 py-2 border rounded ${currentPage === number ? 'bg-blue-500 text-white' : 'bg-white text-black'}`}
+              >
+                {number}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {isOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-5 rounded-lg shadow-lg w-[500px]">
+            <h2 className="text-xl font-bold mb-3">แก้ไขข้อมูลสินค้า</h2>
+
+            <label className="block">Name:</label>
+            <input
+              type="text"
+              name="name"
+              value={product.name}
+              onChange={handleChange}
+              className="w-full border p-2 rounded mb-2"
+            />
+
+            <label className="block">Stock:</label>
+            <input
+              type="number"
+              name="stock"
+              value={product.stock}
+              onChange={handleChange}
+              className="w-full border p-2 rounded mb-2"
+            />
+
+            <label className="block">Price:</label>
+            <input
+              type="number"
+              name="price"
+              value={product.price}
+              onChange={handleChange}
+              className="w-full border p-2 rounded mb-2"
+            />
+
+            <label className="block">Description:</label>
+            <textarea
+              name="description"
+              value={product.description}
+              onChange={handleChange}
+              className="w-full border p-2 rounded mb-2"
+            />
+
+            <label className="block">Status:</label>
+            <select
+              name="status"
+              value={product.status}
+              onChange={(e) => setProduct({ ...product, status: Number(e.target.value) })}
+              className="w-full border p-2 rounded mb-3"
+            >
+              <option value="1">เปิด</option>
+              <option value="0">ปิด</option>
+            </select>
+
+            <div className="flex justify-end space-x-2">
+              <button
+                onClick={handleSubmit}
+                className="px-8 py-2 bg-teal-400 text-white rounded-lg"
+              >
+                บันทึก
+              </button>
+              <button
+                onClick={togglePopup}
+                className="px-8 py-2 bg-red-400 text-white rounded-lg"
+              >
+                ยกเลิก
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}

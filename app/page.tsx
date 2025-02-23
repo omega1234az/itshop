@@ -15,6 +15,7 @@ interface ProductType {
   name: string;
   price: number;
   img: string;
+  status: number;
 }
 
 export default function Home() {
@@ -86,6 +87,7 @@ export default function Home() {
                   name={product.name} 
                   price={product.price} 
                   img={product.img} 
+                  status={product.status}
                 />
               ))}
             </div>
@@ -104,6 +106,7 @@ export default function Home() {
                   name={product.name} 
                   price={product.price} 
                   img={product.img} 
+                  status={product.status}
                 />
               ))}
             </div>
@@ -120,6 +123,7 @@ export default function Home() {
                     id={topcategory.category_id} 
                     name={topcategory.name}  
                     img={topcategory.img} 
+                    
                   />
                 ))}
               </div>
@@ -141,6 +145,7 @@ export default function Home() {
                 name={product.name} 
                 price={product.price} 
                 img={product.img} 
+                status={product.status}
               />
             ))}
           </div>
