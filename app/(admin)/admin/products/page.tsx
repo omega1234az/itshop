@@ -98,10 +98,10 @@ export default function AdminViewProduct() {
   const togglePopup = () => setIsOpen(!isOpen);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const value = e.target.name === "stock" || e.target.name === "price" 
+    const value = e.target.name === "stock" || e.target.name === "price"
       ? Number(e.target.value)
       : e.target.value;
-    
+
     setProduct({ ...product, [e.target.name]: value });
   };
 
@@ -132,7 +132,7 @@ export default function AdminViewProduct() {
           )
         );
         togglePopup();
-        
+
         Swal.fire({
           icon: 'success',
           title: 'อัปเดตสินค้าแล้ว!',
@@ -141,7 +141,7 @@ export default function AdminViewProduct() {
         });
       } else {
         console.error("Failed to update product.");
-        
+
         Swal.fire({
           icon: 'error',
           title: 'อุ๊ปส์...',
@@ -189,61 +189,73 @@ export default function AdminViewProduct() {
       <div className="flex flex-col">
         <div className="container p-5">
           {/* Filters */}
-          <div className="flex space-x-4 mb-5">
-            <Select
-              options={categoryOptions}
-              value={categoryOptions.find(option => option.value === category)}
-              onChange={handleCategoryChange}
-              placeholder="Select Category"
-            />
-            <Select
-              options={statusOptions}
-              value={statusOptions.find(option => option.value === statusFilter)}
-              onChange={handleStatusChange}
-              placeholder="Select Status"
-            />
-          </div>
+          <div className="flex gap-4 mb-5">
+  <Select
+    options={categoryOptions}
+    value={categoryOptions.find(option => option.value === category)}
+    onChange={handleCategoryChange}
+    placeholder="Select Category"
+    className="w-1/3"
+  />
+  <Select
+    options={statusOptions}
+    value={statusOptions.find(option => option.value === statusFilter)}
+    onChange={handleStatusChange}
+    placeholder="Select Status"
+    className="w-1/3"
+  />
+  <div className="flex justify-end items-center w-1/3">
+    <a
+      href=""
+      className="px-8 py-2 bg-green-500 text-white rounded-lg hover:bg-green-400 transition duration-200"
+    >
+      เพิ่มสินค้า
+    </a>
+  </div>
+</div>
+
+          
 
           {/* Product grid */}
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-10">
-  {currentItems.map((item) => (
-    <div
-      key={item.product_id}
-      className="border p-4 rounded-lg shadow-lg flex flex-col items-center justify-between" // ปรับขนาดให้เล็กลง
-    >
-      <div>
-        <img
-          src={item.img}
-          alt={item.name}
-          width={130} // ปรับขนาดของภาพให้เล็กลง
-          height={130} // ปรับขนาดของภาพให้เล็กลง
-          className="shadow-xl mb-4" // ลดระยะห่าง
-        />
-      </div>
-      <div className="flex flex-col items-center">
-        <label className="text-sm font-semibold">{item.name}</label> {/* ลดขนาดของชื่อ */}
-        <label className="text-xs text-gray-500">Stock: {item.stock}</label> {/* ลดขนาดของ text */}
-        <div className="flex items-center">
-          <div>Status:</div>
-          <div
-            className={`w-5 h-5 rounded-full ml-2 ${item.status === 1 ? "bg-teal-400" : "bg-red-400"}`}
-          ></div>
-        </div>
-      </div>
-      <div className="flex justify-center mt-3">
-        <button
-          onClick={() => {
-            setProduct(item);
-            togglePopup();
-          }}
-          className="w-max px-3 py-1 bg-[#92E3F1] text-black rounded-lg hover:bg-[#0294BDD9] font-bold text-xs"
-        >
-          แก้ไข
-        </button>
-      </div>
-    </div>
-  ))}
-</div>
+            {currentItems.map((item) => (
+              <div
+                key={item.product_id}
+                className="border p-4 rounded-lg shadow-lg flex flex-col items-center justify-between" // ปรับขนาดให้เล็กลง
+              >
+                <div>
+                  <img
+                    src={item.img}
+                    alt={item.name}
+                    width={130} // ปรับขนาดของภาพให้เล็กลง
+                    height={130} // ปรับขนาดของภาพให้เล็กลง
+                    className="shadow-xl mb-4" // ลดระยะห่าง
+                  />
+                </div>
+                <div className="flex flex-col items-center">
+                  <label className="text-sm font-semibold">{item.name}</label> {/* ลดขนาดของชื่อ */}
+                  <label className="text-xs text-gray-500">Stock: {item.stock}</label> {/* ลดขนาดของ text */}
+                  <div className="flex items-center">
+                    <div>Status:</div>
+                    <div
+                      className={`w-5 h-5 rounded-full ml-2 ${item.status === 1 ? "bg-teal-400" : "bg-red-400"}`}
+                    ></div>
+                  </div>
+                </div>
+                <div className="flex justify-center mt-3">
+                  <button
+                    onClick={() => {
+                      setProduct(item);
+                      togglePopup();
+                    }}
+                    className="w-max px-3 py-1 bg-[#92E3F1] text-black rounded-lg hover:bg-[#0294BDD9] font-bold text-xs"
+                  >
+                    แก้ไข
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
 
 
           {/* Pagination */}

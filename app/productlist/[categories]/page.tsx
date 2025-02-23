@@ -19,6 +19,7 @@ interface Product {
   name: string;
   price: number;
   img: string;
+  status:number;
   sub_category_id: string;
   sub_category: SubCategory;
   category: Category;
@@ -169,6 +170,7 @@ export default function Productlist() {
               name={product.name}
               price={product.price}
               img={product.img}
+              status={product.status}
             />
           ))
         ) : (
