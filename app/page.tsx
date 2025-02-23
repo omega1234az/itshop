@@ -137,7 +137,7 @@ export default function Home() {
             <p className="text-center font-bold w-full text-lg">สินค้าอื่นๆ</p>
           </div>
           
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 mt-3">
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 mt-3 mb-5">
             {products.map((product) => (
               <Item 
                 key={product.product_id} 
@@ -150,11 +150,7 @@ export default function Home() {
             ))}
           </div>
 
-          <div className="flex justify-center mt-5">
-            <button className="bg-teal-400 hover:bg-teal-500 rounded-lg p-3">
-              <p className="text-center font-bold w-48 text-lg">More</p>
-            </button>
-          </div>
+          
         </div>
       </div>
 

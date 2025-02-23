@@ -2,8 +2,10 @@
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Swal from "sweetalert2";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHeart as solidHeart } from '@fortawesome/free-solid-svg-icons'; // Filled heart icon
+import { faHeart as regularHeart } from '@fortawesome/free-regular-svg-icons'; // Empty heart icon
 
-// สร้าง interface สำหรับข้อมูล Product, Category, SubCategory
 interface CategoryType {
   name: string;
 }
@@ -28,9 +30,10 @@ export default function ProductDetail() {
   const param = useParams<{ id: string }>();
   const id = param.id;
 
-  const [product, setProduct] = useState<ProductType | null>(null); // กำหนด type ให้เป็น ProductType หรือ null
+  const [product, setProduct] = useState<ProductType | null>(null);
   const [loading, setLoading] = useState(true);
-  const [quantity, setQuantity] = useState(1); // จำนวนสินค้าที่จะซื้อ
+  const [quantity, setQuantity] = useState(1);
+  const [isHearted, setIsHearted] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -65,7 +68,7 @@ export default function ProductDetail() {
           icon: "success",
           confirmButtonText: "ตกลง",
         });
-        await window.location.reload(); // รีโหลดหน้าเพื่ออัปเดตข้อมูล
+        await window.location.reload();
       } else {
         const errorData = await response.json();
         if (response.status === 400) {
@@ -108,8 +111,17 @@ export default function ProductDetail() {
   };
 
   const handleBuyNow = async () => {
-    await handleAddToCart(); // เพิ่มเข้าตะกร้า
-    window.location.href = "/cart"; // ไปยังหน้าตะกร้า
+    await handleAddToCart();
+    window.location.href = "/cart";
+  };
+
+  const handleToggleHeart = () => {
+    setIsHearted(!isHearted); // Toggle heart state
+    Swal.fire({
+      title: isHearted ? "ลบออกจากรายการโปรด" : "เพิ่มเข้ารายการโปรด",
+      icon: "success",
+      confirmButtonText: "ตกลง",
+    });
   };
 
   if (loading) {
@@ -122,7 +134,6 @@ export default function ProductDetail() {
 
   return (
     <div className="container mx-auto px-4 py-10">
-      {/* Product Image & Description Section */}
       <div className="flex flex-col lg:flex-row items-center space-y-10 lg:space-y-0">
         <div className="flex-shrink-0">
           <img
@@ -133,8 +144,6 @@ export default function ProductDetail() {
         </div>
         <div className="lg:ml-10 space-y-6">
           <h1 className="text-4xl font-extrabold text-gray-800">{product.name}</h1>
-
-          {/* Product Info (หมวดหมู่, แบรนด์, สต็อก, ยอดขาย) */}
           <div className="text-lg text-gray-700 space-y-2">
             <p>หมวดหมู่: {product.category.name}</p>
             <p>แบรนด์: {product.sub_category.name}</p>
@@ -144,7 +153,6 @@ export default function ProductDetail() {
             <h2 className="text-2xl font-bold text-teal-600">{product.price.toLocaleString()} บาท</h2>
           </div>
 
-          {/* Quantity Selector */}
           <div className="flex items-center space-x-4">
             <button
               className="px-4 py-2 bg-gray-200 rounded-full hover:bg-gray-300"
@@ -162,7 +170,6 @@ export default function ProductDetail() {
             <p>คงเหลือ : {product.stock} ชิ้น</p>
           </div>
 
-          {/* Add to Cart and Buy Now Buttons */}
           <div className="mt-5 flex items-center space-x-4">
             {product.stock > 0 ? (
               <>
@@ -188,11 +195,19 @@ export default function ProductDetail() {
               </button>
             )}
             <p className="text-lg">ขายแล้ว : {product.total_sales} ชิ้น</p>
+            <button
+              onClick={handleToggleHeart}
+              className={`text-3xl ${isHearted ? "text-red-500 animate-pulse" : "text-gray-400 hover:text-red-500 transition-colors duration-300"}`}
+            >
+              <FontAwesomeIcon icon={isHearted ? solidHeart : regularHeart} />
+            </button>
           </div>
+
+          {/* Heart Button */}
+          
         </div>
       </div>
 
-      {/* Product Description Section */}
       <div className="mt-10">
         <p className="text-xl text-gray-600">Product Description:</p>
         <div className="w-full h-48 p-4 border-2 border-gray-300 rounded-lg shadow-md overflow-auto">
