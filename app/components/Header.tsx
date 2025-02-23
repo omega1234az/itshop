@@ -169,7 +169,7 @@ export default function Header() {
                           href="/admin/dashboard"
                           className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
                         >
-                          Admin Dashboard
+                          Admin Dashboard/
                         </a>
                       </li>
                     )}
