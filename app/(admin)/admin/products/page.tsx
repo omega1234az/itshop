@@ -25,13 +25,14 @@ type Product = {
 
 export default function AdminViewProduct() {
   const [items, setItems] = useState<Product[]>([]);
-  const [filteredItems, setFilteredItems] = useState<Product[]>([]); // New state for filtered items
-  const [category, setCategory] = useState(""); // For category filter
-  const [statusFilter, setStatusFilter] = useState(""); // For status filter
+  const [filteredItems, setFilteredItems] = useState<Product[]>([]);
+  const [category, setCategory] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+  const [searchTerm, setSearchTerm] = useState(""); // New state for search term
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(8); // Set the number of items per page
+  const [itemsPerPage] = useState(8);
 
   const [isOpen, setIsOpen] = useState(false);
   const [product, setProduct] = useState<Product>({
@@ -52,7 +53,7 @@ export default function AdminViewProduct() {
         const response = await fetch("/api/product");
         const data = await response.json();
         setItems(data);
-        setFilteredItems(data); // Set the fetched data to filteredItems initially
+        setFilteredItems(data);
       } catch (error) {
         console.error("Error fetching products:", error);
       }
@@ -61,17 +62,18 @@ export default function AdminViewProduct() {
     fetchData();
   }, []);
 
-  // Handle category filter change
   const handleCategoryChange = (selectedOption: any) => {
-    setCategory(selectedOption?.value || ""); // "all" will set it to ""
+    setCategory(selectedOption?.value || "");
   };
 
-  // Handle status filter change
   const handleStatusChange = (selectedOption: any) => {
     setStatusFilter(selectedOption?.value || "");
   };
 
-  // Filter products based on selected filters
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  };
+
   useEffect(() => {
     let filtered = items;
 
@@ -84,15 +86,20 @@ export default function AdminViewProduct() {
       filtered = filtered.filter(item => item.status === status);
     }
 
-    setFilteredItems(filtered); // Apply filters to the list
-  }, [category, statusFilter, items]);
+    if (searchTerm) {
+      filtered = filtered.filter(item =>
+        item.name.toLowerCase().includes(searchTerm.toLowerCase()) // Match the name with the search term
+      );
+    }
 
-  // Calculate the products to display for the current page
+    setFilteredItems(filtered); // Apply filters to the list
+  }, [category, statusFilter, items, searchTerm]);
+
+  // Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = filteredItems.slice(indexOfFirstItem, indexOfLastItem);
 
-  // Handle page change
   const handlePageChange = (pageNumber: number) => setCurrentPage(pageNumber);
 
   const togglePopup = () => setIsOpen(!isOpen);
@@ -163,7 +170,7 @@ export default function AdminViewProduct() {
 
   // Options for filtering
   const categoryOptions = [
-    { value: "all", label: "All" }, // Added "All" option
+    { value: "all", label: "All" },
     { value: "CPU", label: "CPU" },
     { value: "RAM", label: "RAM" },
     { value: "VGA", label: "VGA" },
@@ -190,51 +197,56 @@ export default function AdminViewProduct() {
         <div className="container p-5">
           {/* Filters */}
           <div className="flex gap-4 mb-5">
-  <Select
-    options={categoryOptions}
-    value={categoryOptions.find(option => option.value === category)}
-    onChange={handleCategoryChange}
-    placeholder="Select Category"
-    className="w-1/3"
-  />
-  <Select
-    options={statusOptions}
-    value={statusOptions.find(option => option.value === statusFilter)}
-    onChange={handleStatusChange}
-    placeholder="Select Status"
-    className="w-1/3"
-  />
-  <div className="flex justify-end items-center w-1/3">
-    <a
-      href=""
-      className="px-8 py-2 bg-green-500 text-white rounded-lg hover:bg-green-400 transition duration-200"
-    >
-      เพิ่มสินค้า
-    </a>
-  </div>
-</div>
-
-          
+            <input
+              type="text"
+              placeholder="ค้นหาสินค้า"
+              value={searchTerm}
+              onChange={handleSearchChange}
+              className="w-1/3 p-2 border rounded"
+            />
+            <Select
+              options={categoryOptions}
+              value={categoryOptions.find(option => option.value === category)}
+              onChange={handleCategoryChange}
+              placeholder="เลือกหมวดหมู่"
+              className="w-1/3"
+            />
+            <Select
+              options={statusOptions}
+              value={statusOptions.find(option => option.value === statusFilter)}
+              onChange={handleStatusChange}
+              placeholder="เลือกสถานะ"
+              className="w-1/3"
+            />
+            <div className="flex justify-end items-center w-1/3">
+              <a
+                href="addproduct"
+                className="px-8 py-2 bg-green-500 text-white rounded-lg hover:bg-green-400 transition duration-200"
+              >
+                เพิ่มสินค้า
+              </a>
+            </div>
+          </div>
 
           {/* Product grid */}
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-10">
             {currentItems.map((item) => (
               <div
                 key={item.product_id}
-                className="border p-4 rounded-lg shadow-lg flex flex-col items-center justify-between" // ปรับขนาดให้เล็กลง
+                className="border p-4 rounded-lg shadow-lg flex flex-col items-center justify-between"
               >
                 <div>
                   <img
                     src={item.img}
                     alt={item.name}
-                    width={130} // ปรับขนาดของภาพให้เล็กลง
-                    height={130} // ปรับขนาดของภาพให้เล็กลง
-                    className="shadow-xl mb-4" // ลดระยะห่าง
+                    width={130}
+                    height={130}
+                    className="shadow-xl mb-4"
                   />
                 </div>
                 <div className="flex flex-col items-center">
-                  <label className="text-sm font-semibold">{item.name}</label> {/* ลดขนาดของชื่อ */}
-                  <label className="text-xs text-gray-500">Stock: {item.stock}</label> {/* ลดขนาดของ text */}
+                  <label className="text-sm font-semibold">{item.name}</label>
+                  <label className="text-xs text-gray-500">Stock: {item.stock}</label>
                   <div className="flex items-center">
                     <div>Status:</div>
                     <div
@@ -256,7 +268,6 @@ export default function AdminViewProduct() {
               </div>
             ))}
           </div>
-
 
           {/* Pagination */}
           <div className="flex justify-center space-x-2 mt-5">
