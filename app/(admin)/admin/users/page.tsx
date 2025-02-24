@@ -1,8 +1,8 @@
-"use client";
-import Swal from 'sweetalert2';
-
-import { useState, useEffect } from "react";
+"use client"
+import React, { useState, useEffect } from "react";
 import { Bar } from 'react-chartjs-2';
+import Swal from 'sweetalert2';
+import { Package2, FileText, Edit2, UserCheck, UserX, ChevronDown } from "lucide-react";
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -14,7 +14,6 @@ import {
     ArcElement,
 } from 'chart.js';
 
-// ลงทะเบียน scale และ องค์ประกอบต่างๆ ที่จำเป็น
 ChartJS.register(
     CategoryScale,
     LinearScale,
@@ -25,24 +24,22 @@ ChartJS.register(
     ArcElement
 );
 
-// กำหนดประเภทของ User
 type User = {
     user_id: number;
     name: string;
     email: string;
     total_spent: number;
     img: string;
-    status: number; // เพิ่มฟิลด์ status สำหรับแสดงสถานะ
-    role: string; // เพิ่มฟิลด์ role สำหรับเก็บตำแหน่งของผู้ใช้
+    status: number;
+    role: string;
 };
 
 export default function AdminViewUser() {
-    const [users, setUsers] = useState<User[]>([]); // กำหนด type เป็น User[]
-    const [topUsers, setTopUsers] = useState<User[]>([]); // กำหนด type เป็น User[]
-    const [editUser, setEditUser] = useState<User | null>(null); // สำหรับการแก้ไขข้อมูล
-    const [showPopup, setShowPopup] = useState(false); // สำหรับการแสดง/ซ่อน Popup
+    const [users, setUsers] = useState<User[]>([]);
+    const [topUsers, setTopUsers] = useState<User[]>([]);
+    const [editUser, setEditUser] = useState<User | null>(null);
+    const [showPopup, setShowPopup] = useState(false);
 
-    // ดึงข้อมูลผู้ใช้จาก API เมื่อคอมโพเนนต์โหลด
     useEffect(() => {
         const fetchUsers = async () => {
             try {
@@ -53,20 +50,16 @@ export default function AdminViewUser() {
                     },
                     credentials: "include",
                 });
-                if (!response.ok) {
-                    throw new Error("Failed to fetch users");
-                }
+                if (!response.ok) throw new Error("Failed to fetch users");
                 const data = await response.json();
-                setUsers(data.allUsers); // เซ็ตข้อมูลผู้ใช้ที่ได้จาก API
+                setUsers(data.allUsers);
             } catch (error) {
                 console.error(error);
             }
         };
-
         fetchUsers();
     }, []);
 
-    // ฟังก์ชันที่คำนวณ top 3 users เมื่อโหลดข้อมูลผู้ใช้เสร็จ
     useEffect(() => {
         if (users.length > 0) {
             const top3Users = [...users].sort((a, b) => b.total_spent - a.total_spent).slice(0, 3);
@@ -74,78 +67,46 @@ export default function AdminViewUser() {
         }
     }, [users]);
 
-    // ข้อมูลสำหรับ Chart.js
     const chartData = {
-        labels: topUsers.map((user) => user.name), // ใช้ชื่อผู้ใช้เป็น labels
-        datasets: [
-            {
-                label: "ยอดใช้จ่าย (บาท)", // ชื่อของ dataset
-                data: topUsers.map((user) => user.total_spent), // ใช้ยอดใช้จ่ายเป็นข้อมูลในกราฟ
-                backgroundColor: 'rgba(75, 192, 192, 0.2)', // สีพื้นหลังของแท่ง
-                borderColor: 'rgba(75, 192, 192, 1)', // สีขอบแท่ง
-                borderWidth: 1,
-            },
-        ],
+        labels: topUsers.map((user) => user.name),
+        datasets: [{
+            label: "ยอดใช้จ่าย (บาท)",
+            data: topUsers.map((user) => user.total_spent),
+            backgroundColor: 'rgba(99, 102, 241, 0.5)',
+            borderColor: 'rgb(99, 102, 241)',
+            borderWidth: 1,
+        }],
     };
-    const fetchUsers = async () => {
-        try {
-            const response = await fetch(`/api/admin/users`, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                credentials: "include",
-            });
-            if (!response.ok) {
-                throw new Error("Failed to fetch users");
-            }
-            const data = await response.json();
-            setUsers(data.allUsers); // เซ็ตข้อมูลผู้ใช้ที่ได้จาก API
-        } catch (error) {
-            console.error(error);
-        }
-    };
-    
-    // ฟังก์ชันสำหรับเปิด popup และตั้งค่า user ที่ต้องการแก้ไข
+
     const handleEditClick = (user: User) => {
         setEditUser(user);
         setShowPopup(true);
     };
 
-    // ฟังก์ชันสำหรับบันทึกการแก้ไขข้อมูล
-// ฟังก์ชันสำหรับบันทึกการแก้ไขข้อมูล
-const handleSaveChanges = async () => {
-    if (!editUser) return;
-
-    try {
-        const response = await fetch(`/api/admin/users/${editUser.user_id}`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(editUser),
-        });
-
-        if (response.ok) {
-            const updatedUser = await response.json();
-            // Update users in the state
-            setUsers(users.map(user => user.user_id === updatedUser.user_id ? updatedUser : user));
-            setShowPopup(false); // Close popup
-
-            // Success SweetAlert
-            Swal.fire({
-                title: 'สำเร็จ!',
-                text: 'ข้อมูลผู้ใช้ได้รับการบันทึกแล้ว',
-                icon: 'success',
-                confirmButtonText: 'ตกลง',
+    const handleSaveChanges = async () => {
+        if (!editUser) return;
+        try {
+            const response = await fetch(`/api/admin/users/${editUser.user_id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(editUser),
             });
 
-            // ดึงข้อมูลผู้ใช้ใหม่หลังการอัปเดต
-            await fetchUsers(); // เรียกใช้ฟังก์ชัน fetchUsers เพื่อดึงข้อมูลผู้ใช้ล่าสุด
-        } else {
-            console.error("Failed to update user");
-
-            // Error SweetAlert
+            if (response.ok) {
+                setUsers(users.map(user => 
+                    user.user_id === editUser.user_id ? editUser : user
+                ));
+                setShowPopup(false);
+                Swal.fire({
+                    title: 'สำเร็จ!',
+                    text: 'ข้อมูลผู้ใช้ได้รับการบันทึกแล้ว',
+                    icon: 'success',
+                    confirmButtonText: 'ตกลง',
+                });
+            } else {
+                throw new Error("Failed to update user");
+            }
+        } catch (error) {
             Swal.fire({
                 title: 'ผิดพลาด!',
                 text: 'ไม่สามารถบันทึกข้อมูลผู้ใช้ได้',
@@ -153,141 +114,157 @@ const handleSaveChanges = async () => {
                 confirmButtonText: 'ลองใหม่',
             });
         }
-    } catch (error) {
-        console.error(error);
-
-        // Error SweetAlert
-        Swal.fire({
-            title: 'ผิดพลาด!',
-            text: 'เกิดข้อผิดพลาดในการเชื่อมต่อ',
-            icon: 'error',
-            confirmButtonText: 'ลองใหม่',
-        });
-    }
-};
-
-    
-    // ฟังก์ชันสำหรับปิด popup
-    const handleClosePopup = () => {
-        setShowPopup(false);
-    };
-
-    // ฟังก์ชันสำหรับการเปลี่ยนสถานะของผู้ใช้
-    const handleStatusChange = (user: User) => {
-        if (!editUser) return;
-
-        setEditUser({
-            ...editUser,
-            status: user.status === 1 ? 0 : 1, // เปลี่ยนสถานะเป็น 1 หรือ 0
-        });
-    };
-
-    // ฟังก์ชันสำหรับการเปลี่ยน Role ของผู้ใช้
-    const handleRoleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        if (!editUser) return;
-
-        setEditUser({
-            ...editUser,
-            role: e.target.value, // เปลี่ยน Role
-        });
     };
 
     return (
-        <div className="flex flex-col p-2">
-            <div className="container rounded-lg">
-                <div className="flex flex-1 flex-row">
-                    <h1 className="text-2xl font-semibold p-4 mb-6 mr-10">จัดการผู้ใช้</h1>
+        <div className="min-h-screen bg-gray-50 p-8">
+            <div className="max-w-7xl mx-auto">
+                {/* Header Section */}
+                <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-4">
+                            <Package2 className="w-8 h-8 text-indigo-600" />
+                            <h1 className="text-2xl font-bold text-gray-900">จัดการผู้ใช้งาน</h1>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                            <span className="text-sm text-gray-500">จำนวนผู้ใช้ทั้งหมด:</span>
+                            <span className="text-lg font-semibold text-indigo-600">{users.length}</span>
+                        </div>
+                    </div>
                 </div>
 
-                <div className="flex flex-row justify-between">
-                    <div className="w-3/4">  {/* ใช้ 3/4 ของพื้นที่สำหรับตาราง */}
-                        {/* หัวข้อของตาราง */}
-                        <div className="grid grid-cols-8 gap-4 bg-gray-800 text-white p-2 rounded-md text-center">
-                            <span>ID</span>
-                            <span>ชื่อ</span>
-                            <span>อีเมล</span>
-                            <span>ยอดใช้จ่าย</span>
-                            <span>รูปภาพ</span>
-                            <span>สถานะ</span> {/* เพิ่มคอลัมน์สถานะ */}
-                            <span>Role</span> {/* เพิ่มคอลัมน์ Role */}
-                            <span>จัดการ</span>
+                <div className="grid grid-cols-3 gap-8">
+                    {/* Users Table Section */}
+                    <div className="col-span-2 bg-white rounded-xl shadow-sm p-6">
+                        <div className="flex items-center justify-between mb-6">
+                            <div className="flex items-center space-x-3">
+                                <FileText className="w-5 h-5 text-gray-500" />
+                                <h2 className="text-lg font-semibold text-gray-900">รายการผู้ใช้</h2>
+                            </div>
                         </div>
-                        {/* ข้อมูลผู้ใช้ */}
-                        <div className="divide-y divide-gray-300">
-                            {users.map((user) => (
-                                <div key={user.user_id} className="grid grid-cols-8 gap-4 text-center items-center p-2">
-                                    <span>{user.user_id}</span>
-                                    <span>{user.name}</span>
-                                    <span>{user.email}</span>
-                                    <span>{user.total_spent.toLocaleString()}</span>
-                                    <span><img src={user.img} alt={user.name} className="w-10 h-10 rounded-full" /></span>
-                                    <span className={user.status === 1 ? 'text-green-500' : 'text-red-500'}>
-                                        {user.status === 1 ? 'Active' : 'Inactive'}
-                                    </span>
-                                    {/* แสดงสถานะ */}
-                                    <span>{user.role}</span> {/* แสดง Role */}
-                                    <button
-                                        onClick={() => handleEditClick(user)}
-                                        className="bg-blue-500 text-white px-4 py-1 rounded-md hover:bg-blue-600 transition"
-                                    >
-                                        แก้ไข
-                                    </button>
-                                    
-                                </div>
-                            ))}
+
+                        <div className="overflow-x-auto">
+                            <table className="w-full">
+                                <thead>
+                                    <tr className="bg-gray-50 text-left">
+                                        <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">ผู้ใช้</th>
+                                        <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">อีเมล</th>
+                                        <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">ยอดใช้จ่าย</th>
+                                        <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">สถานะ</th>
+                                        <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">จัดการ</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-200">
+                                    {users.map((user) => (
+                                        <tr key={user.user_id} className="hover:bg-gray-50">
+                                            <td className="px-6 py-4">
+                                                <div className="flex items-center space-x-3">
+                                                    <img src={user.img} alt="" className="w-8 h-8 rounded-full" />
+                                                    <span className="font-medium text-gray-900">{user.name}</span>
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4 text-gray-500">{user.email}</td>
+                                            <td className="px-6 py-4 text-gray-900">
+                                                ฿{user.total_spent.toLocaleString()}
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                {user.status === 1 ? (
+                                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                        <UserCheck className="w-4 h-4 mr-1" />
+                                                        Active
+                                                    </span>
+                                                ) : (
+                                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                                        <UserX className="w-4 h-4 mr-1" />
+                                                        Inactive
+                                                    </span>
+                                                )}
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <button
+                                                    onClick={() => handleEditClick(user)}
+                                                    className="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-indigo-600 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                                >
+                                                    <Edit2 className="w-4 h-4 mr-1" />
+                                                    แก้ไข
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
 
-                    {/* กราฟแท่งแสดง top 3 users */}
-                    {topUsers.length > 0 && (
-                        <div className="w-1/4 ml-4" style={{ height: "300px" }}>  {/* ใช้ 1/4 ของพื้นที่และกำหนดความสูงของกราฟ */}
-                            <h2 className="text-xl font-semibold mb-4">Top 3 Users ที่มียอดใช้จ่ายสูงสุด</h2>
-                            <Bar data={chartData} options={{ responsive: true, maintainAspectRatio: false }} height={300} />
+                    {/* Chart Section */}
+                    <div className="bg-white rounded-xl shadow-sm p-6">
+                        <h2 className="text-lg font-semibold text-gray-900 mb-6">Top 3 ยอดใช้จ่ายสูงสุด</h2>
+                        <div className="h-64">
+                            <Bar data={chartData} options={{ 
+                                responsive: true, 
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        display: false
+                                    }
+                                }
+                            }} />
                         </div>
-                    )}
+                    </div>
                 </div>
             </div>
 
-            {/* Popup สำหรับแก้ไขข้อมูล */}
+            {/* Edit Modal */}
             {showPopup && editUser && (
-                <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50 z-10">
-                    <div className="bg-white p-4 rounded-lg shadow-lg w-1/3">
-                        <h2 className="text-xl font-semibold mb-4">แก้ไขข้อมูลผู้ใช้</h2>
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700">ชื่อ</label>
-                            <input
-                                type="text"
-                                value={editUser.name}
-                                onChange={(e) => setEditUser({ ...editUser, name: e.target.value })}
-                                className="w-full p-2 border border-gray-300 rounded-md"
-                            />
+                <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center">
+                    <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+                        <div className="px-6 py-4 border-b border-gray-200">
+                            <h3 className="text-lg font-medium text-gray-900">แก้ไขข้อมูลผู้ใช้</h3>
                         </div>
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700">อีเมล</label>
-                            <input
-                                type="email"
-                                value={editUser.email}
-                                onChange={(e) => setEditUser({ ...editUser, email: e.target.value })}
-                                className="w-full p-2 border border-gray-300 rounded-md"
-                            />
+                        <div className="px-6 py-4 space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700">ชื่อ</label>
+                                <input
+                                    type="text"
+                                    value={editUser.name}
+                                    onChange={(e) => setEditUser({ ...editUser, name: e.target.value })}
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700">อีเมล</label>
+                                <input
+                                    type="email"
+                                    value={editUser.email}
+                                    onChange={(e) => setEditUser({ ...editUser, email: e.target.value })}
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700">สถานะ</label>
+                                <select
+                                    value={editUser.status}
+                                    onChange={(e) => setEditUser({ ...editUser, status: Number(e.target.value) })}
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                >
+                                    <option value={1}>Active</option>
+                                    <option value={0}>Inactive</option>
+                                </select>
+                            </div>
                         </div>
-                        {/* เพิ่มส่วนของการเปลี่ยนสถานะ */}
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700">สถานะ</label>
-                            <select
-                                value={editUser.status}
-                                onChange={(e) => setEditUser({ ...editUser, status: Number(e.target.value) })}
-                                className="w-full p-2 border border-gray-300 rounded-md"
+                        <div className="px-6 py-4 bg-gray-50 rounded-b-lg flex justify-end space-x-3">
+                            <button
+                                onClick={() => setShowPopup(false)}
+                                className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 rounded-md"
                             >
-                                <option value={1}>Active</option>
-                                <option value={0}>Inactive</option>
-                            </select>
-                        </div>
-                        {/* เพิ่มส่วนของการเปลี่ยน Role */}
-                        
-                        <div className="flex justify-end space-x-2">
-                            <button onClick={handleClosePopup} className="bg-gray-500 text-white px-4 py-1 rounded-md hover:bg-gray-600">ยกเลิก</button>
-                            <button onClick={handleSaveChanges} className="bg-blue-500 text-white px-4 py-1 rounded-md hover:bg-blue-600">บันทึก</button>
+                                ยกเลิก
+                            </button>
+                            <button
+                                onClick={handleSaveChanges}
+                                className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 rounded-md"
+                            >
+                                บันทึก
+                            </button>
                         </div>
                     </div>
                 </div>

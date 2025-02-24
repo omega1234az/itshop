@@ -8,50 +8,43 @@ export async function GET() {
     const now = new Date();
     const firstDayOfMonth = startOfMonth(now);
     const lastDayOfMonth = endOfMonth(now);
-    const fiveDaysAgo = subDays(now, 30);
 
+    // Fetch total sales this month with status filtering
     const totalSalesThisMonth = await prisma.orders.aggregate({
       _sum: { total_price: true },
       where: {
         order_date: { gte: firstDayOfMonth },
-        status: {
-            in: ["processing", "processing"]
-          }
-        
+        status: { in: ["processing", "completed"] },
       },
     });
 
+    // Fetch total number of orders this month
     const totalOrdersThisMonth = await prisma.orders.count({
       where: {
         order_date: { gte: firstDayOfMonth },
+        status: { in: ["processing", "completed"] },
       },
     });
 
+    // Fetch the number of new users this month
     const newUsersThisMonth = await prisma.users.count({
       where: {
         created_at: { gte: firstDayOfMonth },
       },
     });
 
+    // Fetch pending orders
     const pendingOrders = await prisma.orders.count({
-        where: {
-          status: {
-            in: ["pending", "processing"]
-          }
-        }
-      });
-      
+      where: {
+        status: { in: ["pending", "processing"] },
+      },
+    });
 
-    // Get all sales for the current month
+    // Get all sales for the current month with status filtering
     const monthSales = await prisma.orders.findMany({
       where: {
-        order_date: {
-          gte: firstDayOfMonth,
-          lte: lastDayOfMonth,
-        },
-        status: {
-            in: ["processing", "processing"]
-          }
+        order_date: { gte: firstDayOfMonth, lte: lastDayOfMonth },
+        status: { in: ["processing", "completed"] },
       },
       select: {
         order_date: true,
@@ -84,8 +77,13 @@ export async function GET() {
       total_sales: salesByDate[format(date, 'yyyy-MM-dd')]?.total_sales || 0,
     }));
 
-    // Get sales by category
+    // Get sales by category with status filtering
     const orderDetails = await prisma.order_details.findMany({
+      where: {
+        order: {
+          status: { in: ["processing", "completed"] },  // Added status check here
+        },
+      },
       include: {
         product: {
           select: {
@@ -95,8 +93,10 @@ export async function GET() {
       },
     });
 
+    // Fetch categories
     const categories = await prisma.categories.findMany();
 
+    // Sales by category aggregation
     const salesByCategory = orderDetails.reduce((acc, orderDetail) => {
       const categoryId = orderDetail.product.category_id;
       if (!acc[categoryId]) {
@@ -106,19 +106,21 @@ export async function GET() {
       return acc;
     }, {});
 
+    // Format the sales by category data
     const salesByCategoryFormatted = categories.map(category => ({
       category_id: category.category_id,
       category_name: category.name,
       total_sales: salesByCategory[category.category_id]?.total_sales || 0,
     }));
 
+    // Respond with the formatted data
     return Response.json({
       total_sales_this_month: totalSalesThisMonth._sum.total_price || 0,
       total_orders_this_month: totalOrdersThisMonth,
       new_users_this_month: newUsersThisMonth,
       pending_orders: pendingOrders,
       monthly_sales: monthlySalesFormatted,
-      salesByCategory: salesByCategoryFormatted
+      salesByCategory: salesByCategoryFormatted,
     });
   } catch (error) {
     console.error("Error fetching monthly chart data:", error);
