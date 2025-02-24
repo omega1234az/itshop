@@ -30,7 +30,7 @@ interface OrderData {
   order_id: number;
   user_id: number;
   total_price: number;
-  status: "pending" | "processing" | "completed" | "failed";
+  status: "pending" | "processing" | "completed" | "cancelled";
   payment_status: "pending" | "completed" | "failed";
   order_date: string;
   address: string;
@@ -130,7 +130,7 @@ export default function ManageAcc() {
     <div className="flex flex-col container mx-auto px-4">
       {/* แสดงแท็บให้เลือก */}
       <div className="mb-6 border-b border-gray-300 flex">
-        {["pending", "processing", "completed", "failed"].map((status) => (
+        {["pending", "processing", "completed", "cancelled"].map((status) => (
           <button
             key={status}
             className={`w-full py-2 text-lg font-medium text-gray-600 focus:outline-none transition duration-300 ease-in-out 
