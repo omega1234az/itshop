@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 // @ts-ignore
 import ReCAPTCHA from "react-google-recaptcha";
@@ -11,13 +11,17 @@ export default function CreateAcc() {
     password: "",
     confirmPassword: "",
     phone: "",
-    otp: ""
+    otp: "",
   });
-  
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const key = `${process.env.NEXT_PUBLIC_SITE_RECAPCHA}`;
   const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
+
+  // New states for countdown timer
+  const [timer, setTimer] = useState<number>(0); // In seconds
+  const [isOtpButtonDisabled, setIsOtpButtonDisabled] = useState<boolean>(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -32,24 +36,28 @@ export default function CreateAcc() {
       Swal.fire("กรุณากรอกข้อมูล", "โปรดกรอกเบอร์โทรศัพท์ก่อนส่ง OTP", "warning");
       return;
     }
-    
+
     try {
       const response = await fetch("/api/otp/send", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          phone: formData.phone
-        })
+          phone: formData.phone,
+        }),
       });
-      
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || "ไม่สามารถส่ง OTP ได้");
       }
 
       Swal.fire("สำเร็จ!", "OTP ถูกส่งไปยังเบอร์ของคุณแล้ว", "success");
+
+      // Start the countdown timer for OTP button (30 seconds)
+      setTimer(30);
+      setIsOtpButtonDisabled(true);
     } catch (error) {
       if (error instanceof Error) {
         Swal.fire("เกิดข้อผิดพลาด", error.message, "error");
@@ -58,6 +66,24 @@ export default function CreateAcc() {
       }
     }
   };
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout | null = null;
+
+    if (timer > 0) {
+      interval = setInterval(() => {
+        setTimer((prevTimer) => prevTimer - 1);
+      }, 1000);
+    } else {
+      // Enable OTP button after the countdown finishes
+      setIsOtpButtonDisabled(false);
+    }
+
+    // Clean up interval when component unmounts or when the timer reaches 0
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [timer]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -76,7 +102,7 @@ export default function CreateAcc() {
       const response = await fetch("/api/auth/signup", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           name: formData.name,
@@ -84,8 +110,8 @@ export default function CreateAcc() {
           password: formData.password,
           recaptchaToken: recaptchaToken,
           phone: formData.phone,
-          otp: formData.otp
-        })
+          otp: formData.otp,
+        }),
       });
 
       if (!response.ok) {
@@ -229,11 +255,12 @@ export default function CreateAcc() {
                 type="button"
                 onClick={sendOtp}
                 className="p-2 bg-teal-400 hover:bg-teal-500 text-black rounded-lg font-bold"
+                disabled={isOtpButtonDisabled}
               >
-                ส่ง OTP
+                {isOtpButtonDisabled ? `${timer} s` : "ส่ง OTP"}
               </button>
             </div>
-            
+
             <div>
               <label htmlFor="otp" className="block mb-1 text-lg">OTP</label>
               <input
@@ -246,18 +273,11 @@ export default function CreateAcc() {
                 required
               />
             </div>
-            
-            <div className="flex justify-center mt-2">
-              <ReCAPTCHA
-                sitekey={key}
-                onChange={handleRecaptcha}
-              />
-            </div>
-            
-            <div className="flex justify-center mt-3">
+
+            <div className="text-center">
               <button
                 type="submit"
-                className="w-[200px] p-2 text-black rounded-lg bg-teal-400 hover:bg-teal-500 text-xl font-bold"
+                className="w-full p-2 bg-teal-500 hover:bg-teal-600 text-white rounded-lg font-bold"
               >
                 สมัครสมาชิก
               </button>

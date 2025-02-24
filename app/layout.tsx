@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import Header from './components/Header'
+import Footer from './components/Footer'
 import { Kanit } from 'next/font/google'
 
 const kanit = Kanit({
@@ -29,6 +30,7 @@ export default function RootLayout({
       >
         <Header></Header>
         {children}
+        <Footer></Footer>
       </body>
     </html>
   );
