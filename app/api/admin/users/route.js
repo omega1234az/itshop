@@ -17,18 +17,11 @@ export async function GET(req) {
       },
     });
 
-    // คำนวณจำนวนเงินที่ใช้จ่ายทั้งหมดสำหรับผู้ใช้แต่ละคน
+    // ใช้ค่า total_spent ที่มีอยู่แล้วในข้อมูล user
     const usersWithTotalSpent = users.map(user => {
-      const totalSpent = user.orders.reduce((sum, order) => {
-        // คำนวณค่าใช้จ่ายทั้งหมดจาก order_details
-        return sum + order.order_details.reduce((detailSum, detail) => {
-          return detailSum + (detail.price * detail.quantity);
-        }, 0);
-      }, 0) + user.payments.reduce((sum, payment) => sum + payment.amount, 0);
-
       return {
         ...user,
-        total_spent: totalSpent,
+        total_spent: user.total_spent, // ใช้ค่า total_spent ที่มีอยู่แล้ว
       };
     });
 

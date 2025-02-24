@@ -18,6 +18,7 @@ model users {
   created_at  DateTime @default(now()) @db.Timestamp()
   total_spent Float    @default(0)
   img         String   @default("default.jpg")
+  status      Int      @default(1)
   orders      orders[]
   payments    payments[]
   cart        cart[]
