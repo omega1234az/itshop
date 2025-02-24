@@ -14,7 +14,10 @@ export async function GET() {
       _sum: { total_price: true },
       where: {
         order_date: { gte: firstDayOfMonth },
-        status: "completed",
+        status: {
+            in: ["processing", "processing"]
+          }
+        
       },
     });
 
@@ -31,10 +34,13 @@ export async function GET() {
     });
 
     const pendingOrders = await prisma.orders.count({
-      where: {
-        status: "processing",
-      },
-    });
+        where: {
+          status: {
+            in: ["pending", "processing"]
+          }
+        }
+      });
+      
 
     // Get all sales for the current month
     const monthSales = await prisma.orders.findMany({
@@ -43,7 +49,9 @@ export async function GET() {
           gte: firstDayOfMonth,
           lte: lastDayOfMonth,
         },
-        status: "completed",
+        status: {
+            in: ["processing", "processing"]
+          }
       },
       select: {
         order_date: true,
