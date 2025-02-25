@@ -10,9 +10,15 @@ export async function GET(req, { params }) {
       return new Response('ID is required', { status: 400 });
     }
 
-    const product = await prisma.products.findUnique({
+    // อัปเดต view_count โดยเพิ่มขึ้นทีละ 1
+    const product = await prisma.products.update({
       where: {
         product_id: parseInt(id), // แปลง id ให้เป็น integer ถ้าจำเป็น
+      },
+      data: {
+        view_count: {
+          increment: 1, // เพิ่ม view_count ทีละ 1
+        },
       },
       include: {
         category: true,

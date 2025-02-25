@@ -142,7 +142,7 @@ async function handleCheckoutSessionfailed(session) {
             await tx.orders.update({
                 where: { order_id: payment.order.order_id },
                 data: {
-                    status: 'failed',
+                    status: 'cancelled',
                     payment_status: 'failed',
                 }
             });

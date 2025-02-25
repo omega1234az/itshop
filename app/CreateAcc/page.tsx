@@ -12,6 +12,7 @@ export default function CreateAcc() {
     confirmPassword: "",
     phone: "",
     otp: "",
+    recaptchaToken :""
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -27,7 +28,7 @@ export default function CreateAcc() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleRecaptcha = (token: string | null) => {
+  const handleRecaptchaChange = (token: string | null) => {
     setRecaptchaToken(token);
   };
 
@@ -273,7 +274,10 @@ export default function CreateAcc() {
                 required
               />
             </div>
-
+                    <ReCAPTCHA 
+                                    sitekey={key}
+                                    onChange={handleRecaptchaChange} 
+                                  />
             <div className="text-center">
               <button
                 type="submit"
