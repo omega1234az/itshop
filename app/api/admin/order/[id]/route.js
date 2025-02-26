@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 
 export async function PUT(req, { params }) {
   try {
-    // ดึงข้อมูลจาก body ของ request
+    const { id } = await params;
     const { status } = await req.json();
 
     // ตรวจสอบว่ามีการส่งสถานะใหม่มาหรือไม่
@@ -25,7 +25,7 @@ export async function PUT(req, { params }) {
 
     // อัปเดตสถานะของคำสั่งซื้อ
     const updatedOrder = await prisma.orders.update({
-      where: { order_id: Number(params.id) },
+      where: { order_id: Number(id) },
       data: { status },
     });
 
