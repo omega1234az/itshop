@@ -25,9 +25,14 @@ export async function POST(req) {
         const { user, products } = body;
 
         // ตรวจสอบข้อมูลที่จำเป็น
-        if (!user?.user_id) {
+        if (!user?.user_id ) {
             return NextResponse.json({ 
                 message: "Missing user information" 
+            }, { status: 400 });
+        }
+        if (user.address === null) {
+            return NextResponse.json({ 
+                message: "Address" 
             }, { status: 400 });
         }
 

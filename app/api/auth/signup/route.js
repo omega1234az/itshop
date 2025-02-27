@@ -1,15 +1,25 @@
 import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcryptjs'
 import { z } from 'zod'
+import twilio from 'twilio'
 
 const prisma = new PrismaClient()
 
+// Twilio Client
+const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID
+const TWILIO_AUTH_TOKEN=process.env.TWILIO_AUTH_TOKEN
+const TWILIO_SERVICE_SID =process.env.TWILIO_SERVICE_SID
+// Twilio Client
+const twilioClient = twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
+const VERIFY_SERVICE_SID = TWILIO_SERVICE_SID
 // ✅ Schema Validation ด้วย Zod
 const registerSchema = z.object({
   name: z.string().min(3, { message: 'ชื่อผู้ใช้ต้องมีอย่างน้อย 3 ตัวอักษร' }),
   email: z.string().email({ message: 'อีเมลไม่ถูกต้อง' }),
   password: z.string().min(6, { message: 'รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร' }),
-  recaptchaToken: z.string().min(1, { message: 'โปรดยืนยันว่าไม่ใช่บอท' }) // ✅ เพิ่ม reCAPTCHA
+  recaptchaToken: z.string().min(1, { message: 'โปรดยืนยันว่าไม่ใช่บอท' }),
+  phone: z.string().min(3, { message: 'OTP ต้องมี 6 ตัว' }), // ✅ เพิ่ม reCAPTCHA
+  otp: z.string().min(6, { message: 'OTP ต้องมี 6 ตัว' }) // เพิ่ม OTP สำหรับการตรวจสอบ
 })
 
 // ✅ ฟังก์ชันตรวจสอบ reCAPTCHA กับ Google
@@ -23,6 +33,32 @@ const verifyRecaptcha = async (token) => {
   const data = await response.json()
   return data.success
 }
+
+// ✅ ฟังก์ชันตรวจสอบ OTP ด้วย Twilio
+// ✅ ฟังก์ชันตรวจสอบ OTP ด้วย Twilio
+const verifyOTP = async (phone , otp) => {
+  try {
+    // ตรวจสอบว่าเบอร์โทรศัพท์มีเครื่องหมาย + หรือไม่
+    if (!phone.startsWith('+')) {
+      if (phone.startsWith('0')) {
+        phone = '+66' + phone.slice(1) // สำหรับประเทศไทยแปลงหมายเลขจาก 0 -> +66
+      } else {
+        throw new Error('หมายเลขโทรศัพท์ไม่ถูกต้อง')
+      }
+    }
+
+    // ทำการตรวจสอบ OTP ผ่าน Twilio
+    const verificationCheck = await twilioClient.verify.services(VERIFY_SERVICE_SID)
+      .verificationChecks
+      .create({ to: phone, code: otp })
+
+    return verificationCheck.status === 'approved'
+  } catch (error) {
+    console.error('Error in OTP verification:', error)
+    return false
+  }
+}
+
 
 export async function POST(request) {
   try {
@@ -39,13 +75,22 @@ export async function POST(request) {
       )
     }
 
-    const { email, password, name, recaptchaToken } = parseResult.data
+    const { email, password, name, recaptchaToken, otp, phone } = parseResult.data
 
     // ✅ ตรวจสอบ reCAPTCHA Token
     const isRecaptchaValid = await verifyRecaptcha(recaptchaToken)
     if (!isRecaptchaValid) {
       return new Response(
         JSON.stringify({ message: 'การยืนยัน reCAPTCHA ล้มเหลว' }),
+        { status: 400 }
+      )
+    }
+
+    // ✅ ตรวจสอบ OTP
+    const isOtpValid = await verifyOTP(phone, otp)
+    if (!isOtpValid) {
+      return new Response(
+        JSON.stringify({ message: 'OTP ไม่ถูกต้อง' }),
         { status: 400 }
       )
     }
@@ -68,6 +113,7 @@ export async function POST(request) {
         email,
         password: hashedPassword,
         name,
+        phone, // เพิ่มเบอร์โทรศัพท์เพื่อใช้ในการยืนยัน OTP
         img: 'default.jpg' // ✅ ตั้งค่าโปรไฟล์เริ่มต้น
       }
     })

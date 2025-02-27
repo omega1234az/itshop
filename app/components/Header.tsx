@@ -324,7 +324,7 @@ export default function Header() {
                   <button
                     onClick={async () => {
                       await fetch("/api/auth/logout", { method: "POST" });
-                      window.location.reload();
+                      window.location.href == "/";
                     }}
                     className="block w-full text-left px-4 py-2 text-red-500 hover:bg-gray-100"
                   >

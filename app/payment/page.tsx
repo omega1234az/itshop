@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { loadStripe } from '@stripe/stripe-js';
 import { redirect } from "next/dist/server/api-utils";
-
+import Swal from "sweetalert2";
 const key = `${process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY}`;
 const stripePromise = loadStripe(key);
 
@@ -68,8 +68,27 @@ export default function Payment() {
       });
       if (!res.ok) {
         const errorMessage = await res.text();
+        
+        // แสดง Swal
+        Swal.fire({
+          title: 'ข้อมูลไม่ครบ',
+          text: `กรุณากรอกข้อมูลให้ครบเพื่อดำเนินการต่อ`,
+          icon: 'error',
+          confirmButtonText: 'ไปที่โปรไฟล์',
+          showCancelButton: true,
+          cancelButtonText: 'ปิด',
+      }).then((result) => {
+          if (result.isConfirmed) {
+              // ถ้าผู้ใช้คลิก "ไปที่โปรไฟล์"
+              window.location.href = '/profile'; // ไปที่หน้า /profile
+          }
+      });
+      
+    
+        // โยนข้อผิดพลาดเพื่อให้โค้ดทำงานตามปกติ
         throw new Error(`API error: ${errorMessage}`);
-      }
+    }
+    
 
       const { sessionId } = await res.json() as CheckoutResponse;
 
@@ -90,8 +109,8 @@ export default function Payment() {
         sessionId: sessionId
       });
     } catch (error) {
-      console.error("Checkout error:", error);
-      alert(`Error: ${error instanceof Error ? error.message : 'An unknown error occurred'}`);
+      
+      
       setIsProcessing(false);
     }
   }

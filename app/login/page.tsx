@@ -29,6 +29,7 @@ const Login: React.FC = () => {
       });
 
       const data = await res.json();
+      
       if (data.user.role === "customer") {
         window.location.href = "/";
       }
@@ -80,10 +81,10 @@ const Login: React.FC = () => {
     <div className="flex flex-col">
       <div className="flex-1 flex justify-center items-center">
         <div className="w-[500px] h-[600px] p-5 border-2 border-gray-300 rounded shadow-md mt-10 bg-gray-300">
-          <h2 className="text-center mb-5 text-4xl font-bold">Login To your Account</h2>
+          <h2 className="text-center mb-5 text-4xl font-bold">เข้าสู่ระบบ</h2>
           <form onSubmit={handleLogin}>
             <div className="mb-6 text-2xl">
-              <label htmlFor="email" className="block mb-1">Email</label>
+              <label htmlFor="email" className="block mb-1">อีเมล</label>
               <input
                 type="email"
                 id="email"
@@ -95,7 +96,7 @@ const Login: React.FC = () => {
               />
             </div>
             <div className="mb-6 text-2xl">
-              <label htmlFor="password" className="block mb-1">Password</label>
+              <label htmlFor="password" className="block mb-1">รหัสผ่าน</label>
               <input
                 type="password"
                 id="password"
@@ -122,8 +123,8 @@ const Login: React.FC = () => {
           </form>
           {errorMessage && <p className="text-red-500 mt-4">{errorMessage}</p>}
           <div className="flex justify-between mt-6 text-sm">
-            <Link href="/Forgot" className="text-blue-500 hover:underline">Forgot Password?</Link>
-            <Link href="/CreateAcc" className="text-blue-500 hover:underline">Create Account?</Link>
+            <Link href="/Forgot" className="text-blue-500 hover:underline">ลืมรหัสผ่าน?</Link>
+            <Link href="/CreateAcc" className="text-blue-500 hover:underline">สมัครสมาชิก?</Link>
           </div>
         </div>
       </div>

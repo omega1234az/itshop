@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from 'react';
 import { Upload, X, ImagePlus, DollarSign, Package2, Layers, ListPlus } from 'lucide-react';
 import Swal from 'sweetalert2';
+import { useRouter } from 'next/router'
+import { redirect } from 'next/dist/server/api-utils';
 
 interface SubCategory {
   sub_category_id: number;
@@ -123,7 +125,13 @@ export default function AdminAddProduct() {
         }).then((result) => {
           if (result.isConfirmed) {
             resetForm();
+            
           }
+         else {
+          // เจาะจงไปที่ /product เมื่อกด "เสร็จสิ้น"
+          window.location.replace('products');
+        }
+          
         });
       } else {
         throw new Error();
