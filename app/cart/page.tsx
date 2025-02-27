@@ -144,7 +144,7 @@ export default function Cart() {
     }, [cartItems]);
 
     return (
-        <div className="container mx-auto px-4 lg:px-0">
+        <div className="container mx-auto px-4 lg:px-0 min-h-[500px]">
             {/* Order Summary for Mobile - Fixed at Bottom */}
             <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t p-4">
                 <div className="flex justify-between items-center mb-2">
