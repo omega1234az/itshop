@@ -114,7 +114,7 @@ export async function POST(request) {
         password: hashedPassword,
         name,
         phone, // เพิ่มเบอร์โทรศัพท์เพื่อใช้ในการยืนยัน OTP
-        img: 'default.jpg' // ✅ ตั้งค่าโปรไฟล์เริ่มต้น
+        img: 'https://ov0qswwqbt6zhphh.public.blob.vercel-storage.com/profiles/default-7mEtg5JV6cGvLBFBsnASfLszRwwRsa.png' // ✅ ตั้งค่าโปรไฟล์เริ่มต้น
       }
     })
 
